@@ -6,8 +6,8 @@ public class Coin extends GameObject{
     private int value;
     private boolean collected;
 
-    public Coin(ImageView img, int value) {
-        super(img);
+    public Coin(ImageView img, int value, double x, double y) {
+        super(img, x, y);
         this.value = value;
     }
 

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Player extends GameObject{
 
-    private int JUMP_HEIGHT = 20;
+    private final int JUMP_HEIGHT = 20;
     private int coins;
     private boolean isDead;
     private int speed;
@@ -53,10 +53,10 @@ public class Player extends GameObject{
     }
 
     public void moveLeftRight() {
-        if (right && getX() + speed + getImg().getFitWidth() < 1268)
-            setX(getX() + speed);
-        if (left && getX() - speed > 0)
-            setX(getX() - speed);
+        if (right && getImgX() + speed + getImg().getFitWidth() < 1268)
+            setImgX(getImgX() + speed);
+        if (left && getImgX() - speed > 0)
+            setImgX(getImgX() - speed);
     }
 
 //    public void jumpUpdate() {
@@ -124,8 +124,8 @@ public class Player extends GameObject{
     public void setJumping(boolean jumping) {
         this.jumping = jumping;
     }
-    public Player(ImageView img, int speed) {
-        super(img);
+    public Player(ImageView img, double x, double y, int speed) {
+        super(img, x, y);
         this.speed = speed;
         setVelX(0);
         setVelY(0);
