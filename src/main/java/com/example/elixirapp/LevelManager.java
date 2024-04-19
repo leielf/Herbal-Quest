@@ -4,12 +4,16 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import java.io.File;
 import java.util.List;
 
 public class LevelManager {
 
-    private ImageView coinImg, blockImg, thiefImg;
+    private static final Logger logger = Logger.getLogger(LevelManager.class.getName());
     private LevelLoader levelLoader;
     private List<BlockData> blocks;
     private List<CoinData> coins;
@@ -20,6 +24,9 @@ public class LevelManager {
         blocks = lvlData.getBlocks();
         coins = lvlData.getCoins();
         thieves = lvlData.getThieves();
+        ConsoleHandler handler
+                = new ConsoleHandler();
+        logger.addHandler(handler);
     }
 
     private void setImg(ImageView imgView, String pathname, double x, double y){
@@ -30,27 +37,21 @@ public class LevelManager {
         imgView.setLayoutY(y);
     }
 
-//    public void imgViewCreator(){
-//        setImg(coinImg);
-//        setImg(blockImg);
-//        setImg(thiefImg);
-//    }
-
     public void addToLevel(Group root){
         try {
             createBlocks(root);
         }catch (NullPointerException e){
-            System.out.println("No blocks in JSON file.");
+            logger.log(Level.INFO, "No blocks in JSON file.");
         }
         try {
             createCoins(root);
         }catch (NullPointerException e){
-            System.out.println("No coins in JSON file.");
+            logger.log(Level.INFO, "No coins in JSON file.");
         }
         try {
             createThieves(root);
         }catch (NullPointerException e){
-            System.out.println("No thieves in JSON file.");
+            logger.log(Level.INFO, "No thieves in JSON file.");
         }
 //        createBlocks(root);
 //        createCoins(root);
@@ -62,17 +63,19 @@ public class LevelManager {
             ImageView blockImg = new ImageView();
             setImg(blockImg, "", blockData.getX(), blockData.getY());
             root.getChildren().add(blockImg);
+            logger.log(Level.INFO, "Block was added. Position: x: "+ blockImg.getLayoutX() + ", y: " + blockImg.getLayoutY());
         }
     }
 
     private void createCoins(Group root){
         for (CoinData coinData : coins){
             ImageView coinImg = new ImageView();
-            setImg(coinImg, "coin.png", coinData.getX(), coinData.getY());
+            setImg(coinImg, "/Users/leielf/Downloads/ElixirApp/src/main/resources/coin.png", coinData.getX(), coinData.getY());
             root.getChildren().add(coinImg);
-            coinImg.setY(100);
-            coinImg.setX(100);
-            System.out.printf("Coin was added at position x: %f, y: %f\n", coinImg.getLayoutX(), coinImg.getLayoutY());
+            coinImg.setFitHeight(40);
+            coinImg.setFitWidth(40);
+            logger.log(Level.INFO, "Coin was added. Position: x: "+ coinImg.getLayoutX() + ", y: " + coinImg.getLayoutY());
+//            System.out.printf("Coin was added at position x: %f, y: %f\n", coinImg.getLayoutX(), coinImg.getLayoutY());
         }
     }
 
@@ -81,6 +84,7 @@ public class LevelManager {
             ImageView thiefImg = new ImageView();
             setImg(thiefImg, "", thiefData.getX(), thiefData.getY());
             root.getChildren().add(thiefImg);
+            logger.log(Level.INFO, "Thief was added. Position: x: "+ thiefImg.getLayoutX() + ", y: " + thiefImg.getLayoutY());
         }
     }
 

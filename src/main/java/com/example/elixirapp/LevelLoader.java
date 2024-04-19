@@ -1,22 +1,20 @@
 package com.example.elixirapp;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.image.Image;
 import static com.sun.javafx.application.PlatformImpl.exit;
-import javafx.scene.image.ImageView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class LevelLoader {
-    private LevelData levelData;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+public class LevelLoader {
+    private static final Logger logger = Logger.getLogger(LevelLoader.class.getName());
     public LevelLoader() {
     }
 
@@ -28,7 +26,8 @@ public class LevelLoader {
             return loadData(jsonLevel);
         }
         catch (ParseException | IOException e){
-            System.out.println("Error occured while parsing file");
+            logger.log(Level.SEVERE, "Error occured while parsing file");
+//            System.out.println("Error occured while parsing file");
             exit();
         }
         return null;
@@ -42,19 +41,19 @@ public class LevelLoader {
         try {
             levelData.setCoins(loadCoins(coinsArray));
         }catch (NullPointerException e){
-            System.out.println("No coins in JSON file.");
+            logger.log(Level.INFO, "No coins in JSON file.");
             levelData.setCoins(null);
         }
         try {
             levelData.setBlocks(loadBlocks(blocksArray));
         }catch (NullPointerException e){
-            System.out.println("No blocks in JSON file.");
+            logger.log(Level.INFO, "No blocks in JSON file.");
             levelData.setBlocks(null);
         }
         try {
             levelData.setThieves(loadThieves(thievesArray));
         }catch (NullPointerException e){
-            System.out.println("No thieves in JSON file.");
+            logger.log(Level.INFO, "No thieves in JSON file.");
             levelData.setThieves(null);
         }
 //        levelData.setCoins(loadCoins(coinsArray));
