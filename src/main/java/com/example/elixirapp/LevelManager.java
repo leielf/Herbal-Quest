@@ -3,6 +3,7 @@ package com.example.elixirapp;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -37,7 +38,7 @@ public class LevelManager {
         imgView.setLayoutY(y);
     }
 
-    public void addToLevel(Group root){
+    public void addToLevel(Pane root){
         try {
             createBlocks(root);
         }catch (NullPointerException e){
@@ -53,21 +54,20 @@ public class LevelManager {
         }catch (NullPointerException e){
             logger.log(Level.INFO, "No thieves in JSON file.");
         }
-//        createBlocks(root);
-//        createCoins(root);
-//        createThieves(root);
     }
 
-    private void createBlocks(Group root){
+    private void createBlocks(Pane root){
         for (BlockData blockData : blocks){
             ImageView blockImg = new ImageView();
-            setImg(blockImg, "", blockData.getX(), blockData.getY());
+            setImg(blockImg, "src/main/resources/block.png", blockData.getX(), blockData.getY());
+            blockImg.setFitWidth(50);
+            blockImg.setFitHeight(50);
             root.getChildren().add(blockImg);
             logger.log(Level.INFO, "Block was added. Position: x: "+ blockImg.getLayoutX() + ", y: " + blockImg.getLayoutY());
         }
     }
 
-    private void createCoins(Group root){
+    private void createCoins(Pane root){
         for (CoinData coinData : coins){
             ImageView coinImg = new ImageView();
             setImg(coinImg, "/Users/leielf/Downloads/ElixirApp/src/main/resources/coin.png", coinData.getX(), coinData.getY());
@@ -75,11 +75,10 @@ public class LevelManager {
             coinImg.setFitHeight(40);
             coinImg.setFitWidth(40);
             logger.log(Level.INFO, "Coin was added. Position: x: "+ coinImg.getLayoutX() + ", y: " + coinImg.getLayoutY());
-//            System.out.printf("Coin was added at position x: %f, y: %f\n", coinImg.getLayoutX(), coinImg.getLayoutY());
         }
     }
 
-    private void createThieves(Group root){
+    private void createThieves(Pane root){
         for (ThiefData thiefData : thieves){
             ImageView thiefImg = new ImageView();
             setImg(thiefImg, "", thiefData.getX(), thiefData.getY());

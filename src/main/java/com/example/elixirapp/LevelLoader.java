@@ -27,7 +27,6 @@ public class LevelLoader {
         }
         catch (ParseException | IOException e){
             logger.log(Level.SEVERE, "Error occured while parsing file");
-//            System.out.println("Error occured while parsing file");
             exit();
         }
         return null;
