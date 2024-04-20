@@ -1,15 +1,18 @@
 package com.example.elixirapp;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public abstract class GameObject {
     private double x, y;
     private ImageView img;
 
-    public GameObject(ImageView img, double x, double y) {
-        this.img = img;
+    public GameObject(Image img, double x, double y) {
+        this.img = new ImageView(img);
         this.x = x;
         this.y = y;
+        setImgX(x);
+        setImgY(y);
     }
 
     public ImageView getImg() {
@@ -21,19 +24,19 @@ public abstract class GameObject {
     }
 
     public void setImgX(double x){
-        img.setLayoutX(x);
+        img.setX(x);
     }
 
     public void setImgY(double y){
-        img.setLayoutY(y);
+        img.setY(y);
     }
 
     public double getImgX(){
-        return img.getLayoutX();
+        return img.getX();
     }
 
     public double getImgY(){
-        return img.getLayoutY();
+        return img.getY();
     }
 
     public double getX() {
@@ -42,6 +45,7 @@ public abstract class GameObject {
 
     public void setX(double x) {
         this.x = x;
+        setImgX(x);
     }
 
     public double getY() {
@@ -50,6 +54,7 @@ public abstract class GameObject {
 
     public void setY(double y) {
         this.y = y;
+        setImgY(y);
     }
 
     public void update(){}

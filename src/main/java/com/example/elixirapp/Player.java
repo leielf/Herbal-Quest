@@ -1,12 +1,12 @@
 package com.example.elixirapp;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class Player extends GameObject{
-
-    private final int JUMP_HEIGHT = 20;
     private int coins;
     private boolean isDead;
     private int speed;
@@ -19,6 +19,17 @@ public class Player extends GameObject{
     private boolean falling = false;
     private double velX, velY;
     private double gravityAcc;
+    public Player(Image img, double x, double y, int speed) {
+        super(img, x, y);
+        this.speed = speed;
+        setVelX(0);
+        setVelY(15);
+        getImg().setFitWidth(80);
+        getImg().setFitHeight(100);
+        setGravityAcc(0.4);
+        jumping = false;
+        falling = true;
+    }
 
     public boolean isFalling() {
         return falling;
@@ -52,46 +63,37 @@ public class Player extends GameObject{
         this.gravityAcc = gravityAcc;
     }
 
-    public void moveLeftRight() {
-        if (right && getImgX() + speed + getImg().getFitWidth() < 1268)
-            setImgX(getImgX() + speed);
-        if (left && getImgX() - speed > 0)
-            setImgX(getImgX() - speed);
-    }
-
-//    public void jumpUpdate() {
-//        if(jumping && velY < 0){
-//            jumping = false;
-//            falling = true;
-//        }
-//        else if(jumping){
-//            velY = velY - gravityAcc;
-//            setY(getY() - velY);
-//        }
-//
-////        if(falling){
-////            setY(getY() + velY);
-////            velY = velY + gravityAcc;
-////        }
-//    }
-
-    public void jump() {
-        if(!isJumping() && !isFalling()){
-            setJumping(true);
-            velY = 10;
+    public void moveLeftRight(int min, double max) {
+        if (right) {
+            if (getX() < max){
+                setX(getX()+speed);
+            }else{
+                setX(max);
+            }
+        }
+        else if (left && min < getX()){
+            setX(getX()-speed);
         }
     }
-//    public void jump() {
-//        if (jumping && getY() >= this.initialY - getImg().getFitHeight()){
-//            setY(getY()-JUMP_HEIGHT);
-////            up = false;
-//        }else{
-////            up = false;
-//            if (getY()<this.initialY){
-//                setY(this.getY()+JUMP_HEIGHT);
-//            }
-//        }
-//    }
+
+    public void jump() {
+        if(jumping && velY <= 0){
+            jumping = false;
+            falling = true;
+        }
+        else if(jumping){
+            velY = velY - gravityAcc;
+            setY(getY() - velY);
+        }
+        if(falling){
+            setY(getY() + velY);
+            velY = velY + gravityAcc;
+        }
+        if(falling && getY() > 500){
+            jumping = false;
+            falling = false;
+        }
+    }
 
     public int getSpeed() {
         return speed;
@@ -124,18 +126,9 @@ public class Player extends GameObject{
     public void setJumping(boolean jumping) {
         this.jumping = jumping;
     }
-    public Player(ImageView img, double x, double y, int speed) {
-        super(img, x, y);
-        this.speed = speed;
-        setVelX(0);
-        setVelY(0);
-        setGravityAcc(0.38);
-        jumping = false;
-        falling = true;
-    }
 
     public void collideWith(Object obj){
-
+//        getImg().getLayoutBounds().
     }
 
 
@@ -146,7 +139,4 @@ public class Player extends GameObject{
     public void collectHerb(Herb herb){
         this.herbs.add(herb);
     }
-
-
-
 }

@@ -1,12 +1,13 @@
 package com.example.elixirapp;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Coin extends GameObject{
     private int value;
     private boolean collected;
 
-    public Coin(ImageView img, int value, double x, double y) {
+    public Coin(Image img, int value, double x, double y) {
         super(img, x, y);
         this.value = value;
     }
