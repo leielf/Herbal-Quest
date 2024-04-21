@@ -1,15 +1,17 @@
 package com.example.elixirapp;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Player extends GameObject{
-    private int coins;
+    private static final Logger logger = Logger.getLogger(Player.class.getName());
+    private int coins = 0;
     private boolean isDead;
-    private int speed;
+    private int velX;
     private ArrayList<Herb> herbs;
 
     private boolean right = false;
@@ -17,12 +19,11 @@ public class Player extends GameObject{
     private boolean jumping = false;
 
     private boolean falling = false;
-    private double velX, velY;
+    private double velY;
     private double gravityAcc;
-    public Player(Image img, double x, double y, int speed) {
+    public Player(Image img, double x, double y, int velX) {
         super(img, x, y);
-        this.speed = speed;
-        setVelX(0);
+        this.velX = velX;
         setVelY(15);
         getImg().setFitWidth(80);
         getImg().setFitHeight(100);
@@ -37,14 +38,6 @@ public class Player extends GameObject{
 
     public void setFalling(boolean falling) {
         this.falling = falling;
-    }
-
-    public double getVelX() {
-        return velX;
-    }
-
-    public void setVelX(int velX) {
-        this.velX = velX;
     }
 
     public double getVelY() {
@@ -66,13 +59,17 @@ public class Player extends GameObject{
     public void moveLeftRight(int min, double max) {
         if (right) {
             if (getX() < max){
-                setX(getX()+speed);
+                setX(getX()+ velX);
             }else{
                 setX(max);
             }
         }
-        else if (left && min < getX()){
-            setX(getX()-speed);
+        else if (left){
+            if(min < getX()){
+                setX(getX()- velX);
+            }else{
+                setX(min);
+            }
         }
     }
 
@@ -95,12 +92,12 @@ public class Player extends GameObject{
         }
     }
 
-    public int getSpeed() {
-        return speed;
+    public int getVelX() {
+        return velX;
     }
 
-    public void setSpeed(int speed) {
-        this.speed = speed;
+    public void setVelX(int velX) {
+        this.velX = velX;
     }
 
     public boolean isRight() {
@@ -127,13 +124,17 @@ public class Player extends GameObject{
         this.jumping = jumping;
     }
 
-    public void collideWith(Object obj){
-//        getImg().getLayoutBounds().
+    public void collideWith(Pane pane){
+
     }
 
 
     public void collectCoin(Coin coin){
         this.coins+=coin.getValue();
+    }
+
+    public int getCoins() {
+        return coins;
     }
 
     public void collectHerb(Herb herb){
