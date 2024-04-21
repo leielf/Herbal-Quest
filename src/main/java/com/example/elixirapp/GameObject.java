@@ -3,6 +3,8 @@ package com.example.elixirapp;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.awt.*;
+
 public abstract class GameObject {
     private double x, y;
     private ImageView img;
@@ -58,5 +60,25 @@ public abstract class GameObject {
     }
 
     public void update(){}
+
+    public Rectangle getTopBounds(){
+        return new Rectangle((int)(x+img.getFitWidth()/6), (int)y, (int)(2*img.getFitWidth()/3), (int)img.getFitHeight()/2);
+    }
+
+    public Rectangle getBottomBounds(){
+        return new Rectangle((int)(x+img.getFitWidth()/6), (int)(y + img.getFitHeight()/2), (int)(2*img.getFitWidth()/3), (int)img.getFitHeight()/2);
+    }
+
+    public Rectangle getLeftBounds(){
+        return new Rectangle((int)x, (int)y + (int)(y + img.getFitHeight()/2), (int)img.getFitWidth()/4, (int)img.getFitHeight()/2);
+    }
+
+    public Rectangle getRightBounds(){
+        return new Rectangle((int)(x + 3*img.getFitWidth()/4), (int)(y + img.getFitHeight()/4), (int)img.getFitWidth()/4, (int)img.getFitHeight()/2);
+    }
+
+    public Rectangle getBounds(){
+        return new Rectangle((int)x, (int)y, (int)img.getFitWidth(), (int)img.getFitHeight());
+    }
 
 }
