@@ -1,10 +1,15 @@
 package com.example.elixirapp;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static com.sun.javafx.application.PlatformImpl.exit;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,176 +20,137 @@ import java.util.logging.Logger;
 
 public class LevelLoader {
     private static final Logger logger = Logger.getLogger(LevelLoader.class.getName());
+
+    private ArrayList<Block> blocks;
+    private ArrayList<Coin> coins;
+    private ArrayList<Thief> thieves;
     public LevelLoader() {
+        blocks = new ArrayList<>();
+        coins = new ArrayList<>();
+        thieves = new ArrayList<>();
     }
 
-    public LevelData loadLevelData(String filePath){
+    public void addToLevel(Pane root, String filePath){
+        loadLevelData(filePath);
+        try {
+            createBlocks(root);
+        }catch (NullPointerException e){
+            logger.log(Level.INFO, "No blocks in JSON file.");
+        }
+        try {
+            createCoins(root);
+        }catch (NullPointerException e){
+            logger.log(Level.INFO, "No coins in JSON file.");
+        }
+        try {
+            createThieves(root);
+        }catch (NullPointerException e){
+            logger.log(Level.INFO, "No thieves in JSON file.");
+        }
+    }
+
+    private void createBlocks(Pane root){
+        for (Block block : blocks){
+            block.getImg().setFitWidth(50);
+            block.getImg().setFitHeight(50);
+            root.getChildren().add(block.getImg());
+            logger.log(Level.INFO, "Block was added. Position: x: "+ block.getX() + ", y: " + block.getY());
+        }
+    }
+
+    private void createCoins(Pane root){
+        for (Coin coin : coins){
+            coin.getImg().setFitHeight(40);
+            coin.getImg().setFitWidth(40);
+            root.getChildren().add(coin.getImg());
+            logger.log(Level.INFO, "Coin was added. Position: x: "+ coin.getX() + ", y: " + coin.getY());
+        }
+    }
+
+    private void createThieves(Pane root){
+        for (Thief thief : thieves){
+            root.getChildren().add(thief.getImg());
+            logger.log(Level.INFO, "Thief was added. Position: x: "+ thief.getX() + ", y: " + thief.getY());
+        }
+    }
+
+    public void loadLevelData(String filePath){
         JSONParser parser = new JSONParser();
         try {
             FileReader reader = new FileReader(filePath);
             JSONObject jsonLevel = (JSONObject) parser.parse(reader);
-            return loadData(jsonLevel);
+            loadData(jsonLevel);
         }
         catch (ParseException | IOException e){
             logger.log(Level.SEVERE, "Error occured while parsing file");
             exit();
         }
-        return null;
     }
 
-    public LevelData loadData(JSONObject jsonLevel){
-        LevelData levelData = new LevelData();
+    public void loadData(JSONObject jsonLevel){
         JSONArray coinsArray = (JSONArray) jsonLevel.get("coins");
         JSONArray blocksArray = (JSONArray) jsonLevel.get("blocks");
         JSONArray thievesArray = (JSONArray) jsonLevel.get("thieves");
         try {
-            levelData.setCoins(loadCoins(coinsArray));
+            loadCoins(coinsArray);
         }catch (NullPointerException e){
-            logger.log(Level.INFO, "No coins in JSON file.");
-            levelData.setCoins(null);
+            coins = null;
         }
         try {
-            levelData.setBlocks(loadBlocks(blocksArray));
+            loadBlocks(blocksArray);
         }catch (NullPointerException e){
-            logger.log(Level.INFO, "No blocks in JSON file.");
-            levelData.setBlocks(null);
+            blocks = null;
         }
         try {
-            levelData.setThieves(loadThieves(thievesArray));
+            loadThieves(thievesArray);
         }catch (NullPointerException e){
-            logger.log(Level.INFO, "No thieves in JSON file.");
-            levelData.setThieves(null);
+            thieves = null;
         }
-//        levelData.setCoins(loadCoins(coinsArray));
-//        levelData.setBlocks(loadBlocks(blocksArray));
-//        levelData.setThieves(loadThieves(thievesArray));
-        return levelData;
     }
 
-    private List<CoinData> loadCoins(JSONArray arr){
-        List<CoinData> coins = new ArrayList<>();
+    private void loadCoins(JSONArray arr){
+        Image coinImg = new Image("/coin.png");
         for (Object coinObj : arr) {
             JSONObject coinJson = (JSONObject) coinObj;
             final double x = ((Number) coinJson.get("x")).doubleValue();
             final double y = ((Number) coinJson.get("y")).doubleValue();
             final int value = ((Number) coinJson.get("value")).intValue();
-            CoinData coin = new CoinData(x, y, value);
+            Coin coin = new Coin(coinImg, value, x, y);
             coins.add(coin);
         }
-        return coins;
     }
 
-    private List<BlockData> loadBlocks(JSONArray arr){
-        List<BlockData> blocks = new ArrayList<>();
+    private void loadBlocks(JSONArray arr){
+        Image blockImg = new Image("/block.png");
         for (Object blockObj : arr) {
             JSONObject blockJson = (JSONObject) blockObj;
             final double x = ((Number) blockJson.get("x")).doubleValue();
             final double y = ((Number) blockJson.get("y")).doubleValue();
-            BlockData block = new BlockData(x, y);
+            Block block = new Block(blockImg, x ,y);
             blocks.add(block);
         }
-        return blocks;
     }
 
-    private List<ThiefData> loadThieves(JSONArray arr){
-        List<ThiefData> thieves = new ArrayList<>();
+    private void loadThieves(JSONArray arr){
+        Image thiefImg = new Image("/red_circle.png");
         for (Object thiefObj : arr) {
             JSONObject coinJson = (JSONObject) thiefObj;
             final double x = ((Number) coinJson.get("x")).doubleValue();
             final double y = ((Number) coinJson.get("y")).doubleValue();
-            ThiefData thief = new ThiefData(x, y);
+            Thief thief = new Thief(thiefImg, x, y);
             thieves.add(thief);
         }
-        return thieves;
-    }
-}
-class LevelData {
-    private List<BlockData> blocks;
-    private List<CoinData> coins;
-    private List<ThiefData> thieves;
-
-    public void setBlocks(List<BlockData> blocks) {
-        this.blocks = blocks;
     }
 
-    public void setCoins(List<CoinData> coins) {
-        this.coins = coins;
-    }
-
-    public void setThieves(List<ThiefData> thieves) {
-        this.thieves = thieves;
-    }
-
-    public List<BlockData> getBlocks() {
+    public ArrayList<Block> getBlocks() {
         return blocks;
     }
 
-    public List<CoinData> getCoins() {
+    public ArrayList<Coin> getCoins() {
         return coins;
     }
 
-    public List<ThiefData> getThieves() {
+    public ArrayList<Thief> getThieves() {
         return thieves;
-    }
-// Getters and setters
-}
-
-class BlockData {
-    private double x;
-    private double y;
-
-    public BlockData(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-}
-
-class CoinData {
-    private double x;
-    private double y;
-    private int value;
-
-    public CoinData(double x, double y, int value) {
-        this.x = x;
-        this.y = y;
-        this.value = value;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-}
-
-class ThiefData {
-    private double x;
-    private double y;
-
-    public ThiefData(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
     }
 }
