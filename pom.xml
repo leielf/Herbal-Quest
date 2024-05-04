@@ -64,6 +64,11 @@
             <version>1.10.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>file-management</artifactId>
+            <version>3.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
