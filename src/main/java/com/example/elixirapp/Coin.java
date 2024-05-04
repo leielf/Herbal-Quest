@@ -1,19 +1,13 @@
 package com.example.elixirapp;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 public class Coin extends GameObject{
     private int value;
     private boolean collected;
 
-    public Coin(Image img, int value, double x, double y) {
-        super(img, x, y);
+    public Coin(int value, double x, double y) {
+        super(x, y);
         this.value = value;
-    }
-
-    public void onTouch(Player p){
-
+        this.setImagePath("/coin.png");
     }
 
     public int getValue() {
