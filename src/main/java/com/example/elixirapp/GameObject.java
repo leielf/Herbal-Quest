@@ -1,45 +1,23 @@
 package com.example.elixirapp;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 import java.awt.*;
 
 public abstract class GameObject {
     private double x, y;
-    private ImageView img;
 
-    public GameObject(Image img, double x, double y) {
-        this.img = new ImageView(img);
+    private double width, height;
+    private boolean falling;
+    private double velY;
+
+    private String imagePath = "";
+
+    public GameObject(double x, double y) {
         this.x = x;
         this.y = y;
-        setImgX(x);
-        setImgY(y);
+        this.velY = 7;
+        this.falling = true;
     }
 
-    public ImageView getImg() {
-        return img;
-    }
-
-    public void setImg(ImageView img) {
-        this.img = img;
-    }
-
-    public void setImgX(double x){
-        img.setX(x);
-    }
-
-    public void setImgY(double y){
-        img.setY(y);
-    }
-
-    public double getImgX(){
-        return img.getX();
-    }
-
-    public double getImgY(){
-        return img.getY();
-    }
 
     public double getX() {
         return x;
@@ -47,7 +25,6 @@ public abstract class GameObject {
 
     public void setX(double x) {
         this.x = x;
-        setImgX(x);
     }
 
     public double getY() {
@@ -56,29 +33,75 @@ public abstract class GameObject {
 
     public void setY(double y) {
         this.y = y;
-        setImgY(y);
     }
 
-    public void update(){}
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
 
     public Rectangle getTopBounds(){
-        return new Rectangle((int)(x+img.getFitWidth()/6), (int)y, (int)(2*img.getFitWidth()/3), (int)img.getFitHeight()/2);
+        return new Rectangle((int)(x+width/6), (int)y, (int)(2*width/3), (int)height/2);
     }
 
     public Rectangle getBottomBounds(){
-        return new Rectangle((int)(x+img.getFitWidth()/6), (int)(y + img.getFitHeight()/2), (int)(2*img.getFitWidth()/3), (int)img.getFitHeight()/2);
+        return new Rectangle((int)(x+width/6), (int)(y + height/2), (int)(2*width/3), (int)height/2);
     }
 
     public Rectangle getLeftBounds(){
-        return new Rectangle((int)x, (int)y + (int)(y + img.getFitHeight()/2), (int)img.getFitWidth()/4, (int)img.getFitHeight()/2);
+        return new Rectangle((int)x, (int)y + (int)(y + height/2), (int)width/4, (int)height/2);
     }
 
     public Rectangle getRightBounds(){
-        return new Rectangle((int)(x + 3*img.getFitWidth()/4), (int)(y + img.getFitHeight()/4), (int)img.getFitWidth()/4, (int)img.getFitHeight()/2);
+        return new Rectangle((int)(x + 3*width/4), (int)(y + height/4), (int)width/4, (int)height/2);
     }
 
     public Rectangle getBounds(){
-        return new Rectangle((int)x, (int)y, (int)img.getFitWidth(), (int)img.getFitHeight());
+        return new Rectangle((int)x, (int)y, (int)width, (int)height);
     }
 
+
+    public void updateLocation() {
+        if(falling && getY()<600-height-1){
+            setY(getY()  + velY);
+        }else{
+            setY(600 - height);
+        }
+    }
+
+    public boolean isFalling() {
+        return falling;
+    }
+
+    public void setFalling(boolean falling) {
+        this.falling = falling;
+    }
+
+
+    public double getVelY() {
+        return velY;
+    }
+
+    public void setVelY(int velY) {
+        this.velY = velY;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 }
