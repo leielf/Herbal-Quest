@@ -16,11 +16,24 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Draws the level itself based on the map it receives in constructor
+ * {@link com.example.elixirapp.Map}
+ * @author Leila Babayeva
+ * Pane contains instances of ImageView, each ImageView is in acordance
+ * to the objects of the map (have the same order in arraylists as in the
+ * arraylists (blocks, thieves, mushrooms, coins) of the map)
+ *
+ */
+
 public class UIController {
     private Map map;
     public UIController(Map map){
         this.map = map;
     }
+
+    //lowest point of the scene
+    static final double BORDER = 601;
     private static final Logger logger = Logger.getLogger(UIController.class.getName());
     static final int SCENE_WIDTH = 1268;
     static final int SCENE_HEIGHT = 708;
@@ -34,6 +47,8 @@ public class UIController {
     private Pane pane;
     private Scene scene;
     private int startingPoint = 0;
+
+
     public void createPane() {
         pane = new Pane();
         pane.setMinSize(SCENE_WIDTH*5-5, SCENE_HEIGHT);
@@ -52,6 +67,11 @@ public class UIController {
     }
 
 
+    /**
+     * Setting Clip to the Pane to move the background with the objects
+     * as the player moves. Clip's x value is dependent on the player's
+     * x value.
+     */
     public void addClip(){
         javafx.scene.shape.Rectangle clip = new Rectangle();
         clip.widthProperty().bind(this.scene.widthProperty());
@@ -70,6 +90,10 @@ public class UIController {
         return value ;
     }
 
+    /**
+     * Adding coins counter to the Pane for the player to know
+     * how many coins the player collected.
+     */
     public void addCoinsCounter(){
         acquiredCoins = new Text();
         acquiredCoinsImg = new ImageView(new Image("/coin.png"));
@@ -100,6 +124,10 @@ public class UIController {
         }
     }
 
+    /**
+     * adding one object to the pane
+     * @param obj abject that is supposed to be added
+     */
     public void addGameObject(GameObject obj){
         if (obj !=null && !obj.getImagePath().isEmpty()){
             ImageView view = new ImageView(new Image(obj.getImagePath()));
@@ -112,7 +140,13 @@ public class UIController {
         }
     }
 
-
+    /**
+     * Adding game objects to the UIController's arraylists with ImageViews
+     * to be able to update their positions later on in the code
+     * @param obj object that is instance of one of the subclasses of the
+     *            class GameObject {@link com.example.elixirapp.GameObject}
+     * @param view respective ImageView to the obj
+     */
     public void addToImgArray(GameObject obj, ImageView view){
         if(obj instanceof Block) {
             this.blocksImgView.add(view);
@@ -155,20 +189,34 @@ public class UIController {
         pane.getChildren().remove(o);
     }
 
+    /**
+     * Updating the positions of the objects in the Pane, shifting
+     * the background according to the values of the objects of the map
+     */
     public void updateUI(){
-        map.getPlayer().setMin(startingPoint);
-        map.getPlayer().setMax(pane.getWidth() - map.getPlayer().getWidth());
-        playerImgView.setX(map.getPlayer().getX());
-        playerImgView.setY(map.getPlayer().getY());
-        moveBackground(map.getPlayer().isRight(), map.getPlayer().getVelX());
-        acquiredCoins.setText(""+map.getPlayer().getCoins());
-        acquiredCoinsImg.setX(startingPoint+1150);
-        acquiredCoins.setX(acquiredCoinsImg.getX()+acquiredCoinsImg.getFitWidth()+10);
-        if(!thievesImgView.isEmpty()){
-            for(int i = 0; i< map.getThieves().size(); i++){
-                thievesImgView.get(i).setX(map.getThieves().get(i).getX());
-                thievesImgView.get(i).setY(map.getThieves().get(i).getY());
+        try {
+            map.getPlayer().setMin(startingPoint);
+            map.getPlayer().setMax(pane.getWidth() - map.getPlayer().getWidth());
+            playerImgView.setX(map.getPlayer().getX());
+            playerImgView.setY(map.getPlayer().getY());
+            moveBackground(map.getPlayer().isRight(), (int)map.getPlayer().getVelX());
+            acquiredCoins.setText(""+map.getPlayer().getCoins());
+            acquiredCoinsImg.setX(startingPoint+1150);
+            acquiredCoins.setX(acquiredCoinsImg.getX()+acquiredCoinsImg.getFitWidth()+10);
+            if(!thievesImgView.isEmpty()){
+                for(int i = 0; i< map.getThieves().size(); i++){
+                    thievesImgView.get(i).setX(map.getThieves().get(i).getX());
+                    thievesImgView.get(i).setY(map.getThieves().get(i).getY());
+                }
             }
+            if(!mushroomsImgView.isEmpty()){
+                for(int i = 0; i<map.getMushrooms().size(); i++){
+                    mushroomsImgView.get(i).setY(map.getMushrooms().get(i).getY());
+
+                }
+            }
+        }catch (NullPointerException e){
+            logger.log(Level.INFO, "NULL POINTER EXCEPTION in UIController");
         }
     }
 
