@@ -11,6 +11,10 @@ import org.json.simple.parser.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Loads objects from JSON file and creates Map for the level
+ * @author Leila Babayeva
+*/
 public class LevelLoader {
 
     Map map;
@@ -28,7 +32,6 @@ public class LevelLoader {
             loadData(jsonLevel);
         } catch (ParseException | IOException e) {
             logger.log(Level.SEVERE, "Error occured while parsing file");
-//            exit();
         }
     }
 
@@ -60,15 +63,20 @@ public class LevelLoader {
         loadPlayer();
     }
 
+    /**
+     *
+     */
+
     private void loadMushrooms(JSONArray arr) {
         ArrayList<Mushroom> mushrooms = new ArrayList<>();
-        for (Object coinObj : arr) {
-            JSONObject coinJson = (JSONObject) coinObj;
-            final double x = ((Number) coinJson.get("x")).doubleValue();
-            final double y = ((Number) coinJson.get("y")).doubleValue();
+        for (Object mushroomObj : arr) {
+            JSONObject mushroomJson = (JSONObject) mushroomObj;
+            final double x = ((Number) mushroomJson.get("x")).doubleValue();
+            final double y = ((Number) mushroomJson.get("y")).doubleValue();
             Mushroom mushroom = new Mushroom(x, y);
-            mushroom.setHeight(40);
-            mushroom.setWidth(40);
+            mushroom.setHeight(60);
+            mushroom.setWidth(60);
+            checkCoordinates(mushroom, x, y);
             mushrooms.add(mushroom);
         }
         map.setMushrooms(mushrooms);
@@ -84,6 +92,7 @@ public class LevelLoader {
             Coin coin = new Coin(value, x, y);
             coin.setHeight(40);
             coin.setWidth(40);
+            checkCoordinates(coin, x, y);
             coins.add(coin);
         }
         map.setCoins(coins);
@@ -106,27 +115,35 @@ public class LevelLoader {
     private void loadThieves(JSONArray arr) {
         ArrayList<Thief> thieves = new ArrayList<>();
         for (Object thiefObj : arr) {
-            JSONObject coinJson = (JSONObject) thiefObj;
-            final double x = ((Number) coinJson.get("x")).doubleValue();
-            final double y = ((Number) coinJson.get("y")).doubleValue();
+            JSONObject thiefJson = (JSONObject) thiefObj;
+            final double x = ((Number) thiefJson.get("x")).doubleValue();
+            final double y = ((Number) thiefJson.get("y")).doubleValue();
             Thief thief = new Thief(x, y);
             thief.setWidth(60);
             thief.setHeight(60);
+            checkCoordinates(thief, x, y);
             thieves.add(thief);
         }
         map.setThieves(thieves);
     }
 
     public void loadPlayer() {
-        Player player = new Player(UIController.SCENE_WIDTH / 2, 500, 7);
+        Player player = new Player(UIController.SCENE_WIDTH / 2, 500, 6);
         player.setWidth(80);
         player.setHeight(100);
         player.setX(player.getX() - player.getWidth());
         map.setPlayer(player);
     }
 
+    public void checkCoordinates(GameObject obj, double x, double y){
+        if(x < obj.getWidth()) obj.setX(obj.getWidth() + 1);
+        if(x > UIController.SCENE_WIDTH*5) obj.setX(UIController.SCENE_WIDTH*5 - 5- obj.getWidth());
+        if(y < obj.getHeight()) obj.setY(obj.getHeight() + 1);
+        if(y+ obj.getHeight() > UIController.BORDER) obj.setY(UIController.BORDER- obj.getHeight());
+    }
     public Map getMap() {
         return map;
     }
+
 
 }
