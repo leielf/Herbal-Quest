@@ -1,18 +1,6 @@
 package com.example.elixirapp;
-import javafx.beans.binding.Bindings;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Map{
     private UIController uiController;
@@ -33,7 +21,13 @@ public class Map{
         }
         if(!thieves.isEmpty()){
             for(int i = 0; i< thieves.size(); i++){
+                thieves.get(i).updateLocation();
                 thieves.get(i).moveLeftRight();
+            }
+        }
+        if(!mushrooms.isEmpty()){
+            for(int i = 0; i< mushrooms.size(); i++){
+                mushrooms.get(i).updateLocation();
             }
         }
         uiController.updateUI();
