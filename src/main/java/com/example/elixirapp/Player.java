@@ -5,21 +5,20 @@ import java.util.ArrayList;
 public class Player extends GameObject{
     private int coins = 0;
     private boolean isDead;
-    private int velX;
     private ArrayList<Herb> herbs;
 
     private boolean right = false;
     private boolean left = false;
-    private boolean jumping = false;
+    private boolean jumping;
 
-    private boolean falling = false;
+    private boolean falling;
     private double velY;
     private double gravityAcc;
 
     private double min, max;
     public Player(double x, double y, int velX) {
         super(x, y);
-        this.velX = velX;
+        setVelX(velX);
         setGravityAcc(0.4);
         jumping = false;
         falling = false;
@@ -52,29 +51,21 @@ public class Player extends GameObject{
     }
 
     public void move() {
-        velX = 7;
+//        setVelX(4);
         if (right) {
             if (getX() < max){
-                setX(getX()+ velX);
+                setX(getX()+ getVelX());
             }else{
                 setX(max);
             }
         }
         else if (left){
             if(min < getX()){
-                setX(getX()- velX);
+                setX(getX()- getVelX());
             }else{
                 setX(min);
             }
         }
-    }
-
-    public int getVelX() {
-        return velX;
-    }
-
-    public void setVelX(int velX) {
-        this.velX = velX;
     }
 
     public boolean isRight() {
