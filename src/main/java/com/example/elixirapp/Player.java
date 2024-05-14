@@ -22,6 +22,7 @@ public class Player extends GameObject{
         setGravityAcc(0.4);
         jumping = false;
         falling = false;
+        herbs = new ArrayList<>();
         this.setImagePath("/masculine-user.png");
     }
 
@@ -51,7 +52,6 @@ public class Player extends GameObject{
     }
 
     public void move() {
-//        setVelX(4);
         if (right) {
             if (getX() < max){
                 setX(getX()+ getVelX());
@@ -145,5 +145,13 @@ public class Player extends GameObject{
 
     public void setMax(double max) {
         this.max = max;
+    }
+
+    public ArrayList<Herb> getHerbs() {
+        return herbs;
+    }
+
+    public void setHerbs(ArrayList<Herb> herbs) {
+        this.herbs = herbs;
     }
 }
