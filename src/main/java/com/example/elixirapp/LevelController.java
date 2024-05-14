@@ -13,17 +13,20 @@ import java.util.logging.Logger;
  */
 public class LevelController{
     private static final Logger logger = Logger.getLogger(LevelController.class.getName());
-
+    private GameEngine gameEngine;
     Map map;
+    private SceneController sceneController;
 
-    private LevelLoader levelLoader = new LevelLoader();
-    public LevelController() {
+    Stage stage;
+    public LevelController(GameEngine gameEngine, Map map) {
+        this.gameEngine = gameEngine;
+        this.map = map;
     }
-    public void createLevel(Stage stage, String filePath){
-        levelLoader.loadLevelData(filePath);
-        map = levelLoader.getMap();
-        map.createMap(stage);
-        stage.show();
+
+    public void createLevel(Stage stage){
+        sceneController = new SceneController(map, gameEngine);
+        sceneController.switchScreen(stage);
+        this.stage = stage;
     }
 
     public void checkCollisions(){
@@ -43,6 +46,32 @@ public class LevelController{
             checkMushroomCollisions();
             if(!map.getBlocks().isEmpty()) checkIsMushroomLevitating();
         }
+        if(!map.getHerbs().isEmpty()){
+            checkHerbsCollisions();
+        }
+    }
+
+    public void checkHerbsCollisions(){
+        ArrayList<Herb> toBeRemoved = new ArrayList<>();
+        ArrayList<ImageView> imgToBeRemoved = new ArrayList<>();
+        for(int i = 0; i < map.getHerbs().size(); i++){
+            if(map.getHerbs().get(i).getBounds().intersects(map.getPlayer().getBounds())){
+                map.getPlayer().collectHerb(map.getHerbs().get(i));
+                ImageView herbView = sceneController.getHerbsImgView().get(i);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        sceneController.remove(herbView);
+                    }
+                });
+                logger.log(Level.INFO, "Herb " + map.getHerbs().get(i).getName() + " was collected");
+                toBeRemoved.add(map.getHerbs().get(i));
+                imgToBeRemoved.add(herbView);
+                logger.log(Level.INFO, "Player currently has " + map.getPlayer().getHerbs().size()+ " herbs");
+            }
+        }
+        map.getHerbs().removeAll(toBeRemoved);
+        sceneController.getHerbsImgView().removeAll(imgToBeRemoved);
     }
 
     /**
@@ -86,7 +115,6 @@ public class LevelController{
             for (Block block: map.getBlocks()){
                 java.awt.Rectangle blockSideBounds = !map.getPlayer().isLeft() ? block.getLeftBounds() : block.getRightBounds();
                 if(blockSideBounds.intersects(playerSideBounds)){
-//                    map.getPlayer().setVelX(0);
                     map.getPlayer().setFalling(true);
                     map.getPlayer().setJumping(false);
                 }
@@ -102,14 +130,13 @@ public class LevelController{
     public void checkCoinsCollisions(){
         ArrayList<Coin> toBeRemoved = new ArrayList<>();
         ArrayList<ImageView> imgToBeRemoved = new ArrayList<>();
-        ArrayList<ImageView> coinsView = map.getUiController().getCoinsImgView();
         for (int i =0; i < map.getCoins().size(); i++){
             if(map.getCoins().get(i).getBounds().intersects(map.getPlayer().getBounds())){
-                ImageView coin = coinsView.get(i);
+                ImageView coin = sceneController.getCoinsImgView().get(i);
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        map.remove(coin);
+                        sceneController.remove(coin);
                     }
                 });
                 logger.log(Level.INFO, "Coin was collected");
@@ -120,7 +147,7 @@ public class LevelController{
             }
         }
         map.getCoins().removeAll(toBeRemoved);
-        coinsView.removeAll(imgToBeRemoved);
+        sceneController.getCoinsImgView().removeAll(imgToBeRemoved);
     }
 
     /**
@@ -143,6 +170,7 @@ public class LevelController{
         for(Mushroom mushroom: map.getMushrooms()){
             if(mushroom.getBounds().intersects(map.getPlayer().getBounds())){
                 map.getPlayer().setDead(true);
+                gameEngine.setGameStatus(GameStatus.FAIL);
                 logger.log(Level.INFO, "Collision with mushroom");
             }
         }
@@ -188,12 +216,39 @@ public class LevelController{
     }
 
     public void gameUpdate(){
-        checkCollisions();
-        map.updateLocations();
+        if(gameEngine.getGameStatus() == GameStatus.RUNNING){
+            checkCollisions();
+            map.updateLocations();
+            sceneController.updateUI();
+        }
+        checkGameStatus();
     }
 
-    public boolean isPlayerDead(){
-        return map.getPlayer().isDead();
+    public void checkGameStatus(){
+        if(gameEngine.getGameStatus() == GameStatus.START_SCREEN
+                || gameEngine.getGameStatus() == GameStatus.FAIL){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    sceneController.createMap(stage);
+                }
+            });
+        }
+    }
+    public void reset(Map map){
+        this.map = map;
+        sceneController.setMap(map);
+        sceneController.switchScreen(stage);
+        checkIsLoadMap();
     }
 
+    public void endLevel(){
+        sceneController.switchScreen(stage);
+    }
+
+    public void checkIsLoadMap(){
+        if(sceneController.isLoadMap()){
+            sceneController.createMap(stage);
+        }
+    }
 }
