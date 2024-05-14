@@ -1,18 +1,17 @@
 package com.example.elixirapp;
-import javafx.stage.Stage;
 import java.util.ArrayList;
 
 public class Map{
-    private UIController uiController;
+
     private ArrayList<Block> blocks = new ArrayList<>();
     private ArrayList<Coin> coins = new ArrayList<>();
     private ArrayList<Thief> thieves = new ArrayList<>();
     private ArrayList<Mushroom> mushrooms = new ArrayList<>();
 
+    private ArrayList<Herb> herbs = new ArrayList<>();
     private Player player;
 
     public Map(){
-        uiController = new UIController(this);
     }
     public void updateLocations(){
         if(player!=null){
@@ -30,11 +29,6 @@ public class Map{
                 mushrooms.get(i).updateLocation();
             }
         }
-        uiController.updateUI();
-    }
-
-    public void createMap(Stage stage){
-        uiController.createMap(stage);
     }
 
     public ArrayList<Block> getBlocks() {
@@ -71,7 +65,7 @@ public class Map{
 
 
     public void remove(Object o){
-        uiController.remove(o);
+        coins.remove(o);
     }
 
     public ArrayList<Mushroom> getMushrooms() {
@@ -82,7 +76,11 @@ public class Map{
         this.mushrooms = mushrooms;
     }
 
-    public UIController getUiController() {
-        return uiController;
+    public ArrayList<Herb> getHerbs() {
+        return herbs;
+    }
+
+    public void setHerbs(ArrayList<Herb> herbs) {
+        this.herbs = herbs;
     }
 }
