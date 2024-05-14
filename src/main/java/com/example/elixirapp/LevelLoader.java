@@ -40,6 +40,7 @@ public class LevelLoader {
         JSONArray blocksArray = (JSONArray) jsonLevel.get("blocks");
         JSONArray thievesArray = (JSONArray) jsonLevel.get("thieves");
         JSONArray mushroomsArray = (JSONArray) jsonLevel.get("mushrooms");
+        JSONArray herbsArray = (JSONArray) jsonLevel.get("herbs");
         try {
             loadCoins(coinsArray);
         } catch (NullPointerException e) {
@@ -60,12 +61,14 @@ public class LevelLoader {
         } catch (NullPointerException e) {
             map.setMushrooms(null);
         }
+        try {
+            loadHerbs(herbsArray);
+        } catch (NullPointerException e) {
+            map.setHerbs(null);
+        }
         loadPlayer();
     }
 
-    /**
-     *
-     */
 
     private void loadMushrooms(JSONArray arr) {
         ArrayList<Mushroom> mushrooms = new ArrayList<>();
@@ -127,8 +130,23 @@ public class LevelLoader {
         map.setThieves(thieves);
     }
 
+    private void loadHerbs(JSONArray arr) {
+        ArrayList<Herb> herbs = new ArrayList<>();
+        for (Object herbObj : arr) {
+            JSONObject herbJson = (JSONObject) herbObj;
+            final String name = (String) herbJson.get("name");
+            final double x = ((Number) herbJson.get("x")).doubleValue();
+            final double y = ((Number) herbJson.get("y")).doubleValue();
+            Herb herb = new Herb(name, x, y);
+            herb.setHeight(40);
+            herb.setWidth(40);
+            herbs.add(herb);
+        }
+        map.setHerbs(herbs);
+    }
+
     public void loadPlayer() {
-        Player player = new Player(UIController.SCENE_WIDTH / 2, 500, 6);
+        Player player = new Player(SceneController.SCENE_WIDTH / 2, 500, 6);
         player.setWidth(80);
         player.setHeight(100);
         player.setX(player.getX() - player.getWidth());
@@ -137,9 +155,9 @@ public class LevelLoader {
 
     public void checkCoordinates(GameObject obj, double x, double y){
         if(x < obj.getWidth()) obj.setX(obj.getWidth() + 1);
-        if(x > UIController.SCENE_WIDTH*5) obj.setX(UIController.SCENE_WIDTH*5 - 5- obj.getWidth());
+        if(x > SceneController.SCENE_WIDTH*5) obj.setX(SceneController.SCENE_WIDTH*5 - 5- obj.getWidth());
         if(y < obj.getHeight()) obj.setY(obj.getHeight() + 1);
-        if(y+ obj.getHeight() > UIController.BORDER) obj.setY(UIController.BORDER- obj.getHeight());
+        if(y+ obj.getHeight() > SceneController.BORDER) obj.setY(SceneController.BORDER- obj.getHeight());
     }
     public Map getMap() {
         return map;
