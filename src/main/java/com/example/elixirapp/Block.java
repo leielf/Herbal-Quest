@@ -4,6 +4,6 @@ public class Block extends GameObject{
 
     public Block(double x, double y) {
         super(x, y);
-        this.setImagePath("/block.png");
+        this.setImagePath("/pixel_block.png");
     }
 }
