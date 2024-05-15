@@ -1,11 +1,17 @@
-package com.example.elixirapp;
+package com.example.elixirapp.GameEntity;
+
+import com.example.elixirapp.GameEntity.Coin;
+import com.example.elixirapp.GameEntity.GameObject;
+import com.example.elixirapp.GameEntity.Herb;
 
 import java.util.ArrayList;
 
-public class Player extends GameObject{
+public class Player extends GameObject {
     private int coins = 0;
     private boolean isDead;
     private ArrayList<Herb> herbs;
+
+    private String right1, right2, left1, left2;
 
     private boolean right = false;
     private boolean left = false;
@@ -17,13 +23,16 @@ public class Player extends GameObject{
 
     private double min, max;
     public Player(double x, double y, int velX) {
-        super(x, y);
+        super("/player_right1.png", x, y);
+        right1 = "/player_right1.png";
+        right2 = "/player_right2.png";
+        left1 = "/player_left1.png";
+        left2 = "/player_left2.png";
         setVelX(velX);
         setGravityAcc(0.4);
         jumping = false;
         falling = false;
         herbs = new ArrayList<>();
-        this.setImagePath("/masculine-user.png");
     }
 
 
@@ -151,7 +160,20 @@ public class Player extends GameObject{
         return herbs;
     }
 
-    public void setHerbs(ArrayList<Herb> herbs) {
-        this.herbs = herbs;
+
+    public String getRight1() {
+        return right1;
+    }
+
+    public String getRight2() {
+        return right2;
+    }
+
+    public String getLeft1() {
+        return left1;
+    }
+
+    public String getLeft2() {
+        return left2;
     }
 }
