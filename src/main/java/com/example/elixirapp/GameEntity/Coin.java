@@ -1,13 +1,12 @@
-package com.example.elixirapp;
+package com.example.elixirapp.GameEntity;
 
-public class Coin extends GameObject{
+public class Coin extends GameObject {
     private int value;
     private boolean collected;
 
     public Coin(int value, double x, double y) {
-        super(x, y);
+        super("/pixel_coin.png", x, y);
         this.value = value;
-        this.setImagePath("/coin.png");
     }
 
     public int getValue() {

@@ -1,6 +1,7 @@
-package com.example.elixirapp;
+package com.example.elixirapp.GameEntity;
 
 import java.awt.*;
+import javafx.scene.image.Image;
 
 public abstract class GameObject {
     private double x, y;
@@ -11,10 +12,12 @@ public abstract class GameObject {
     private double velX;
     private double gravityAcc = 0.3;
     private String imagePath = "";
-    public GameObject(double x, double y) {
+    public GameObject(String imagePath, double x, double y) {
         this.x = x;
         this.y = y;
+        this.imagePath = imagePath;
         this.falling = false;
+        setWidthHeight();
     }
     public double getX() {
         return x;
@@ -133,5 +136,11 @@ public abstract class GameObject {
 
     public void setVelX(double velX) {
         this.velX = velX;
+    }
+
+    public void setWidthHeight(){
+        Image img = new Image(imagePath);
+        height = img.getHeight();
+        width = img.getWidth();
     }
 }
