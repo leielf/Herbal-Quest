@@ -3,11 +3,12 @@ package com.example.elixirapp;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.example.elixirapp.GameEntity.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,8 +78,6 @@ public class LevelLoader {
             final double x = ((Number) mushroomJson.get("x")).doubleValue();
             final double y = ((Number) mushroomJson.get("y")).doubleValue();
             Mushroom mushroom = new Mushroom(x, y);
-            mushroom.setHeight(60);
-            mushroom.setWidth(60);
             checkCoordinates(mushroom, x, y);
             mushrooms.add(mushroom);
         }
@@ -93,8 +92,6 @@ public class LevelLoader {
             final double y = ((Number) coinJson.get("y")).doubleValue();
             final int value = ((Number) coinJson.get("value")).intValue();
             Coin coin = new Coin(value, x, y);
-            coin.setHeight(40);
-            coin.setWidth(40);
             checkCoordinates(coin, x, y);
             coins.add(coin);
         }
@@ -108,8 +105,6 @@ public class LevelLoader {
             final double x = ((Number) blockJson.get("x")).doubleValue();
             final double y = ((Number) blockJson.get("y")).doubleValue();
             Block block = new Block(x, y);
-            block.setHeight(40);
-            block.setWidth(50);
             blocks.add(block);
         }
         map.setBlocks(blocks);
@@ -122,8 +117,6 @@ public class LevelLoader {
             final double x = ((Number) thiefJson.get("x")).doubleValue();
             final double y = ((Number) thiefJson.get("y")).doubleValue();
             Thief thief = new Thief(x, y);
-            thief.setWidth(60);
-            thief.setHeight(60);
             checkCoordinates(thief, x, y);
             thieves.add(thief);
         }
@@ -146,18 +139,16 @@ public class LevelLoader {
     }
 
     public void loadPlayer() {
-        Player player = new Player(SceneController.SCENE_WIDTH / 2, 500, 6);
-        player.setWidth(80);
-        player.setHeight(100);
+        Player player = new Player(SceneCreator.SCENE_WIDTH / 2, 500, 6);
         player.setX(player.getX() - player.getWidth());
         map.setPlayer(player);
     }
 
     public void checkCoordinates(GameObject obj, double x, double y){
         if(x < obj.getWidth()) obj.setX(obj.getWidth() + 1);
-        if(x > SceneController.SCENE_WIDTH*5) obj.setX(SceneController.SCENE_WIDTH*5 - 5- obj.getWidth());
+        if(x > SceneCreator.SCENE_WIDTH*5) obj.setX(SceneCreator.SCENE_WIDTH*5 - 5- obj.getWidth());
         if(y < obj.getHeight()) obj.setY(obj.getHeight() + 1);
-        if(y+ obj.getHeight() > SceneController.BORDER) obj.setY(SceneController.BORDER- obj.getHeight());
+        if(y+ obj.getHeight() > SceneCreator.BORDER) obj.setY(SceneCreator.BORDER- obj.getHeight());
     }
     public Map getMap() {
         return map;
