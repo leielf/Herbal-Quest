@@ -41,7 +41,12 @@ public class GameEngine implements Runnable{
         while (gameThread != null){
             levelController.checkGameStatus();
             if (gameStatus == GameStatus.RUNNING) {
-                levelController.gameUpdate();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        levelController.gameUpdate();
+                    }
+                });
             }
             else if (gameStatus == GameStatus.FAIL){
                 Platform.runLater(new Runnable() {
