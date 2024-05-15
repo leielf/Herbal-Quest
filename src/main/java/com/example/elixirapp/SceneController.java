@@ -1,4 +1,5 @@
 package com.example.elixirapp;
+import com.example.elixirapp.GameEntity.*;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,10 +29,7 @@ public class SceneController {
     private Map map;
     private boolean loadMap = false;
     private final GameEngine gameEngine;
-    //lowest point of the scene
-    static final double BORDER = 601;
     private static final Logger logger = Logger.getLogger(SceneController.class.getName());
-    static final int SCENE_WIDTH = 1268;
     private final ArrayList<ImageView> blocksImgView = new ArrayList<>();
     private final ArrayList<ImageView> coinsImgView = new ArrayList<>();
     private final ArrayList<ImageView> thievesImgView = new ArrayList<>();
@@ -41,6 +39,9 @@ public class SceneController {
     private ImageView playerImgView;
     private Pane pane;
     private Scene scene;
+
+    private int imgCounter = 0;
+    private int imgNum = 1;
 
     public SceneController(Map map, GameEngine gameEngine){
         this.map = map;
@@ -119,7 +120,7 @@ public class SceneController {
      * Adding game objects to the UIController's arraylists with ImageViews
      * to be able to update their positions later on in the code
      * @param obj object that is instance of one of the subclasses of the
-     *            class GameObject {@link com.example.elixirapp.GameObject}
+     *            class GameObject {@link GameObject}
      * @param view respective ImageView to the obj
      */
     public void addToImgArray(GameObject obj, ImageView view){
@@ -157,16 +158,17 @@ public class SceneController {
                 scene.setOnKeyReleased(e -> processKey(e.getCode(), false));
                 stage.setScene(scene);
                 stage.show();
+                sceneCreator.addDescriptionWindow();
                 break;
             case GameStatus.FAIL:
                 clearImgArrays();
-                scene.setRoot(sceneCreator.createPaneWithText("FAIL. PRESS SPACE TO TRY AGAIN"));
+                scene.setRoot(sceneCreator.createPaneWithText("YOU DIED. PRESS SPACE TO TRY AGAIN"));
                 stage.setScene(scene);
                 stage.show();
                 break;
             case GameStatus.WIN:
                 clearImgArrays();
-                scene.setRoot(sceneCreator.createPaneWithText("WIN"));
+                scene.setRoot(sceneCreator.createPaneWithText("CONGRATS! YOU PICKED UP ALL NEEDED HERBS!"));
                 stage.setScene(scene);
                 stage.show();
                 break;
@@ -181,6 +183,7 @@ public class SceneController {
             map.getPlayer().setDead(false);
             pane = sceneCreator.createPane();
             sceneCreator.addCoinsCounter(pane);
+            sceneCreator.addStall(pane);
             scene.setRoot(pane);
             scene.setOnKeyPressed(e -> processKey(e.getCode(), true));
             scene.setOnKeyReleased(e -> processKey(e.getCode(), false));
@@ -205,6 +208,8 @@ public class SceneController {
      */
     public void updateUI(){
         try {
+            imgCounter++;
+            playerMovement();
             map.getPlayer().setMin(clip.getX());
             playerImgView.setX(map.getPlayer().getX());
             playerImgView.setY(map.getPlayer().getY());
@@ -217,6 +222,7 @@ public class SceneController {
                 for(int i = 0; i< map.getThieves().size(); i++){
                     thievesImgView.get(i).setX(map.getThieves().get(i).getX());
                     thievesImgView.get(i).setY(map.getThieves().get(i).getY());
+                    thiefMovement(map.getThieves().get(i), thievesImgView.get(i));
                 }
             }
             if(!mushroomsImgView.isEmpty()){
@@ -224,6 +230,11 @@ public class SceneController {
                     mushroomsImgView.get(i).setY(map.getMushrooms().get(i).getY());
 
                 }
+            }
+            if(map.getStall().isEntered()){
+                imgNum = 0;
+                map.getStall().setEntered(false);
+                sceneCreator.addStallPopupWindow(map);
             }
         }catch (NullPointerException e){
             logger.log(Level.INFO, "NULL POINTER EXCEPTION in UIController");
@@ -277,5 +288,37 @@ public class SceneController {
 
     public ArrayList<ImageView> getHerbsImgView() {
         return herbsImgView;
+    }
+
+    public void playerMovement(){
+        if(imgCounter>7){
+            if(imgNum == 1) imgNum = 2;
+            if(imgNum == 2) imgNum = 1;
+            imgCounter = 0;
+        }
+        if(map.getPlayer().isRight()){
+            if(imgNum == 1){
+                playerImgView.setImage(new Image(map.getPlayer().getRight1()));
+                imgNum = 2;
+            }else if (imgNum == 2){
+                playerImgView.setImage(new Image(map.getPlayer().getRight2()));
+            }
+        }
+        if(map.getPlayer().isLeft()){
+            if(imgNum == 1){
+                playerImgView.setImage(new Image(map.getPlayer().getLeft1()));
+                imgNum = 2;
+            }else if (imgNum == 2){
+                playerImgView.setImage(new Image(map.getPlayer().getLeft2()));
+            }
+        }
+    }
+
+    public void thiefMovement(Thief thief, ImageView thiefView){
+        if(thief.isRight()){
+            thiefView.setImage(new Image(thief.getImgRight()));
+        }else{
+            thiefView.setImage(new Image(thief.getImgLeft()));
+        }
     }
 }
