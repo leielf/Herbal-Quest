@@ -1,4 +1,6 @@
 package com.example.elixirapp;
+import com.example.elixirapp.GameEntity.*;
+
 import java.util.ArrayList;
 
 public class Map{
@@ -7,6 +9,7 @@ public class Map{
     private ArrayList<Coin> coins = new ArrayList<>();
     private ArrayList<Thief> thieves = new ArrayList<>();
     private ArrayList<Mushroom> mushrooms = new ArrayList<>();
+    private final Stall stall = new Stall(SceneCreator.SCENE_WIDTH-100, 500);
 
     private ArrayList<Herb> herbs = new ArrayList<>();
     private Player player;
@@ -19,14 +22,14 @@ public class Map{
             player.move();
         }
         if(!thieves.isEmpty()){
-            for(int i = 0; i< thieves.size(); i++){
-                thieves.get(i).updateLocation();
-                thieves.get(i).moveLeftRight();
+            for (Thief thief : thieves) {
+                thief.updateLocation();
+                thief.moveLeftRight();
             }
         }
         if(!mushrooms.isEmpty()){
-            for(int i = 0; i< mushrooms.size(); i++){
-                mushrooms.get(i).updateLocation();
+            for (Mushroom mushroom : mushrooms) {
+                mushroom.updateLocation();
             }
         }
     }
@@ -63,11 +66,6 @@ public class Map{
         this.player = player;
     }
 
-
-    public void remove(Object o){
-        coins.remove(o);
-    }
-
     public ArrayList<Mushroom> getMushrooms() {
         return mushrooms;
     }
@@ -82,5 +80,9 @@ public class Map{
 
     public void setHerbs(ArrayList<Herb> herbs) {
         this.herbs = herbs;
+    }
+
+    public Stall getStall() {
+        return stall;
     }
 }
