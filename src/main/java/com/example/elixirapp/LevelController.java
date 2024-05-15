@@ -1,4 +1,5 @@
 package com.example.elixirapp;
+import com.example.elixirapp.GameEntity.*;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -49,6 +50,9 @@ public class LevelController{
         if(!map.getHerbs().isEmpty()){
             checkHerbsCollisions();
         }
+        if(map.getStall()!=null){
+            checkStallCollisions();
+        }
     }
 
     public void checkHerbsCollisions(){
@@ -74,6 +78,15 @@ public class LevelController{
         sceneController.getHerbsImgView().removeAll(imgToBeRemoved);
     }
 
+    public void checkStallCollisions(){
+        if(!map.getStall().isEntered()){
+            if(map.getPlayer().getBounds().intersects(map.getStall().getBounds())){
+                map.getStall().setEntered(true);
+                map.getPlayer().setVelX(0);
+                map.getPlayer().setX(map.getStall().getX()-map.getPlayer().getWidth()-2);
+            }
+        }
+    }
     /**
      * checking whether the player is stepping on the block.
      * If so, player's Y value is changed for him to be on top of
@@ -233,6 +246,14 @@ public class LevelController{
                     sceneController.createMap(stage);
                 }
             });
+        }else{
+            if(map.getStall().isExited()){
+                if(map.getStall().isBought()){
+                    gameEngine.setGameStatus(GameStatus.WIN);
+                }else{
+                    gameEngine.setGameStatus(GameStatus.FAIL);
+                }
+            }
         }
     }
     public void reset(Map map){
