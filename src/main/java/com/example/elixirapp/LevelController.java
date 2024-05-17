@@ -26,7 +26,7 @@ public class LevelController{
 
     public void createLevel(Stage stage){
         sceneController = new SceneController(map, gameEngine);
-        sceneController.switchScreen(stage);
+        sceneController.showDescriptionPopup(stage);
         this.stage = stage;
     }
 
@@ -156,7 +156,7 @@ public class LevelController{
                 toBeRemoved.add(map.getCoins().get(i));
                 imgToBeRemoved.add(coin);
                 map.getPlayer().collectCoin(map.getCoins().get(i));
-                logger.log(Level.INFO, "Player currently has " + map.getPlayer().getCoins());
+                logger.log(Level.INFO, "Player currently has " + map.getPlayer().getTotalCoins());
             }
         }
         map.getCoins().removeAll(toBeRemoved);
@@ -170,7 +170,9 @@ public class LevelController{
     public void checkThiefCollisions(){
         for(Thief thief: map.getThieves()){
             if(thief.getBounds().intersects(map.getPlayer().getBounds())){
-                map.getPlayer().setCoins(0);
+                map.getPlayer().setTotalCoins(0);
+                map.getPlayer().getCoins().clear();
+                sceneController.showThiefPopup(stage);
             }
         }
     }
@@ -229,6 +231,16 @@ public class LevelController{
     }
 
     public void gameUpdate(){
+        if(map.getStall().isEntered()){
+            sceneController.switchScreen(stage);
+        }
+        if(map.getStall().isExited()){
+            if(map.getStall().isBought()){
+                gameEngine.setGameStatus(GameStatus.WIN);
+            }else{
+                gameEngine.setGameStatus(GameStatus.FAIL);
+            }
+        }
         if(gameEngine.getGameStatus() == GameStatus.RUNNING){
             checkCollisions();
             map.updateLocations();
@@ -246,14 +258,6 @@ public class LevelController{
                     sceneController.createMap(stage);
                 }
             });
-        }else{
-            if(map.getStall().isExited()){
-                if(map.getStall().isBought()){
-                    gameEngine.setGameStatus(GameStatus.WIN);
-                }else{
-                    gameEngine.setGameStatus(GameStatus.FAIL);
-                }
-            }
         }
     }
     public void reset(Map map){
@@ -270,6 +274,12 @@ public class LevelController{
     public void checkIsLoadMap(){
         if(sceneController.isLoadMap()){
             sceneController.createMap(stage);
+        }
+    }
+
+    public void checkStartScreen(){
+        if(!sceneController.isDescritpionShowing()){
+            sceneController.switchScreen(stage);
         }
     }
 }
