@@ -1,14 +1,19 @@
 package com.example.elixirapp;
 import com.example.elixirapp.GameEntity.*;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,10 +27,9 @@ import java.util.logging.Logger;
  * arraylists (blocks, thieves, mushrooms, coins) of the map)
  *
  */
-
 public class SceneController {
 
-    private SceneCreator sceneCreator;
+    private final SceneCreator sceneCreator = new SceneCreator();
     private Map map;
     private boolean loadMap = false;
     private final GameEngine gameEngine;
@@ -37,6 +41,7 @@ public class SceneController {
     private final ArrayList<ImageView> herbsImgView = new ArrayList<>();
     javafx.scene.shape.Rectangle clip;
     private ImageView playerImgView;
+    private ImageView stallView;
     private Pane pane;
     private Scene scene;
 
@@ -46,13 +51,14 @@ public class SceneController {
     public SceneController(Map map, GameEngine gameEngine){
         this.map = map;
         this.gameEngine = gameEngine;
-        sceneCreator = new SceneCreator();
     }
 
     public void moveBackground(boolean isRight, int velX){
         if (isRight) {
-            if ((this.playerImgView.getX() - ((Rectangle)this.pane.getClip()).getX()) > this.scene.getWidth()/2-this.playerImgView.getFitWidth()) {
-                clip.setX(clip.getX()+velX);
+            if(clip.getX() <= pane.getMaxWidth()*2/3){
+                if ((this.playerImgView.getX() - ((Rectangle)this.pane.getClip()).getX()) > this.scene.getWidth()/2-this.playerImgView.getFitWidth()) {
+                    clip.setX(clip.getX()+velX);
+                }
             }
         }
     }
@@ -61,7 +67,6 @@ public class SceneController {
      * Adding coins counter to the Pane for the player to know
      * how many coins the player collected.
      */
-
     public void addObjects(){
         if(!coinsImgView.isEmpty()){
             this.pane.getChildren().addAll(coinsImgView);
@@ -77,6 +82,9 @@ public class SceneController {
         }
         if(playerImgView != null){
             this.pane.getChildren().add(playerImgView);
+        }
+        if(stallView != null){
+            this.pane.getChildren().add(stallView);
         }
         if(!herbsImgView.isEmpty()){
             this.pane.getChildren().addAll(herbsImgView);
@@ -130,7 +138,7 @@ public class SceneController {
         }
         if(obj instanceof Coin) {
             this.coinsImgView.add(view);
-            logger.log(Level.INFO, "Coin was added. X: "+obj.getX() + "; Y: " + obj.getY() + ", array size: " + coinsImgView.size());
+            logger.log(Level.INFO, "Coin was added. X: "+obj.getX() + "; Y: " + obj.getY());
         }
         if(obj instanceof Thief) {
             this.thievesImgView.add(view);
@@ -148,31 +156,40 @@ public class SceneController {
             this.herbsImgView.add(view);
             logger.log(Level.INFO, "Herb was added. X: "+obj.getX() + "; Y: " + obj.getY());
         }
+        if(obj instanceof Stall){
+            this.stallView = view;
+            logger.log(Level.INFO, "Stall was added. X: "+obj.getX() + "; Y: " + obj.getY());
+        }
     }
 
     public void switchScreen(Stage stage){
+        String txt = sceneCreator.choosePhrase(map.getStall().isBought(),
+                map.getStall().isExited(), gameEngine.getGameStatus());
         switch (gameEngine.getGameStatus()){
             case GameStatus.START_SCREEN:
-                scene = sceneCreator.createScene(sceneCreator.createPaneWithText("PRESS SPACE TO START"));
+                scene.setRoot(sceneCreator.createPaneWithText(txt, 0));
                 scene.setOnKeyPressed(e -> processKey(e.getCode(), true));
                 scene.setOnKeyReleased(e -> processKey(e.getCode(), false));
                 stage.setScene(scene);
                 stage.show();
-                sceneCreator.addDescriptionWindow();
                 break;
-            case GameStatus.FAIL:
+            case GameStatus.FAIL, GameStatus.WIN:
                 clearImgArrays();
-                scene.setRoot(sceneCreator.createPaneWithText("YOU DIED. PRESS SPACE TO TRY AGAIN"));
-                stage.setScene(scene);
-                stage.show();
-                break;
-            case GameStatus.WIN:
-                clearImgArrays();
-                scene.setRoot(sceneCreator.createPaneWithText("CONGRATS! YOU PICKED UP ALL NEEDED HERBS!"));
+                scene.setRoot(sceneCreator.createPaneWithText(txt, clip.getX()));
                 stage.setScene(scene);
                 stage.show();
                 break;
             default:
+                sceneCreator.thiefPopUp();
+                if(map.getStall().isEntered()){
+                    map.getStall().setEntered(false);
+                    imgNum = 0;
+                    scene.setRoot(sceneCreator.createPaneWithText("", clip.getX()));
+                    stage.setScene(scene);
+                    stage.show();
+                    Popup stallPopup = sceneCreator.addStallPopup(map);
+                    stallPopup.show(stage);
+                }
                 break;
         }
     }
@@ -183,15 +200,18 @@ public class SceneController {
             map.getPlayer().setDead(false);
             pane = sceneCreator.createPane();
             sceneCreator.addCoinsCounter(pane);
-            sceneCreator.addStall(pane);
             scene.setRoot(pane);
             scene.setOnKeyPressed(e -> processKey(e.getCode(), true));
             scene.setOnKeyReleased(e -> processKey(e.getCode(), false));
             clip = sceneCreator.addClip(scene, pane);
             addGameObject(map.getPlayer());
-            map.getPlayer().setMax(pane.getMaxWidth()-map.getPlayer().getWidth());
+            addGameObject(map.getStall());
             addObjects();
             stage.setScene(scene);
+            map.getPlayer().setMax(pane.getMaxWidth()-map.getPlayer().getWidth());
+            map.getStall().setExited(false);
+            map.getStall().setBought(false);
+            map.getStall().setEntered(false);
             stage.show();
             gameEngine.setGameStatus(GameStatus.RUNNING);
             loadMap = false;
@@ -204,17 +224,18 @@ public class SceneController {
 
     /**
      * Updating the positions of the objects in the Pane, shifting
-     * the background according to the values of the objects of the map
+     * the background according to the position of the player
      */
     public void updateUI(){
         try {
             imgCounter++;
             playerMovement();
             map.getPlayer().setMin(clip.getX());
+            map.getPlayer().setMax(pane.getMaxWidth()-map.getPlayer().getWidth());
             playerImgView.setX(map.getPlayer().getX());
             playerImgView.setY(map.getPlayer().getY());
             moveBackground(map.getPlayer().isRight(), (int)map.getPlayer().getVelX());
-            sceneCreator.getAcquiredCoins().setText(""+map.getPlayer().getCoins());
+            sceneCreator.getAcquiredCoins().setText(""+map.getPlayer().getTotalCoins());
             sceneCreator.getAcquiredCoinsImg().setX(clip.getX()+1150);
             sceneCreator.getAcquiredCoins().setX(sceneCreator.getAcquiredCoinsImg().getX()+
                     sceneCreator.getAcquiredCoinsImg().getFitWidth()+10);
@@ -228,13 +249,7 @@ public class SceneController {
             if(!mushroomsImgView.isEmpty()){
                 for(int i = 0; i<map.getMushrooms().size(); i++){
                     mushroomsImgView.get(i).setY(map.getMushrooms().get(i).getY());
-
                 }
-            }
-            if(map.getStall().isEntered()){
-                imgNum = 0;
-                map.getStall().setEntered(false);
-                sceneCreator.addStallPopupWindow(map);
             }
         }catch (NullPointerException e){
             logger.log(Level.INFO, "NULL POINTER EXCEPTION in UIController");
@@ -261,7 +276,6 @@ public class SceneController {
                 gameEngine.getGameStatus() == GameStatus.FAIL){
             if(code == KeyCode.SPACE){
                 loadMap = true;
-                logger.log(Level.INFO, "SPACE was pressed, loadMap = " + loadMap);
             }
         }
     }
@@ -275,6 +289,8 @@ public class SceneController {
     }
 
     public void clearImgArrays(){
+        imgNum =1;
+        imgCounter = 0;
         if(!coinsImgView.isEmpty()) coinsImgView.clear();
         if(!thievesImgView.isEmpty()) thievesImgView.clear();
         if(!mushroomsImgView.isEmpty()) mushroomsImgView.clear();
@@ -320,5 +336,37 @@ public class SceneController {
         }else{
             thiefView.setImage(new Image(thief.getImgLeft()));
         }
+    }
+
+    public boolean isDescritpionShowing(){
+        return sceneCreator.getDescription().isShowing();
+    }
+
+    public void showDescriptionPopup(Stage stage){
+        scene = sceneCreator.createScene(sceneCreator.createPaneWithText("",0));
+        stage.setScene(scene);
+        stage.show();
+        sceneCreator.addDescriptionPopUp();
+        sceneCreator.getDescription().show(stage);
+    }
+    public void showThiefPopup(Stage stage){
+        ScheduledExecutorService executor =  Executors.newSingleThreadScheduledExecutor();
+        Popup thiefPopup = sceneCreator.getThiefPopup();
+        if(!thiefPopup.isShowing()){
+            thiefPopup.setX(stage.getX()+30);
+            thiefPopup.setY(stage.getY()+20);
+            thiefPopup.show(stage);
+            executor.submit(() -> Platform.runLater(stage::show));
+            executor.schedule(
+                    () -> Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            thiefPopup.hide();
+                        }
+                    })
+                    , 2
+                    , TimeUnit.SECONDS);
+        }
+
     }
 }
