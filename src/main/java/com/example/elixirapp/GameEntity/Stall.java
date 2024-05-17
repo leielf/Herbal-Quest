@@ -4,7 +4,6 @@ public class Stall extends GameObject{
 
 
     private boolean isEntered;
-    private final int herbCost = 2;
     private boolean isBought;
 
     private boolean isExited;
@@ -12,6 +11,7 @@ public class Stall extends GameObject{
         super("/pixel_stall.png", x, y);
         isEntered = false;
         isExited = false;
+        isBought = false;
     }
 
     public boolean isEntered() {
@@ -28,10 +28,6 @@ public class Stall extends GameObject{
 
     public void setBought(boolean bought) {
         isBought = bought;
-    }
-
-    public int getHerbCost() {
-        return herbCost;
     }
 
     public boolean isExited() {
