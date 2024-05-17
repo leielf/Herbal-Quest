@@ -1,16 +1,12 @@
 package com.example.elixirapp.GameEntity;
 
-import com.example.elixirapp.GameEntity.Coin;
-import com.example.elixirapp.GameEntity.GameObject;
-import com.example.elixirapp.GameEntity.Herb;
-
 import java.util.ArrayList;
 
 public class Player extends GameObject {
-    private int coins = 0;
+    private int totalCoins = 0;
     private boolean isDead;
     private ArrayList<Herb> herbs;
-
+    private ArrayList<Coin> coins;
     private String right1, right2, left1, left2;
 
     private boolean right = false;
@@ -32,6 +28,7 @@ public class Player extends GameObject {
         setGravityAcc(0.4);
         jumping = false;
         falling = false;
+        coins = new ArrayList<>();
         herbs = new ArrayList<>();
     }
 
@@ -103,15 +100,16 @@ public class Player extends GameObject {
 
 
     public void collectCoin(Coin coin){
-        this.coins+=coin.getValue();
+        this.totalCoins +=coin.getValue();
+        coins.add(coin);
     }
 
-    public int getCoins() {
-        return coins;
+    public int getTotalCoins() {
+        return totalCoins;
     }
 
-    public void setCoins(int coins) {
-        this.coins = coins;
+    public void setTotalCoins(int totalCoins) {
+        this.totalCoins = totalCoins;
     }
 
     public void collectHerb(Herb herb){
@@ -175,5 +173,13 @@ public class Player extends GameObject {
 
     public String getLeft2() {
         return left2;
+    }
+
+    public ArrayList<Coin> getCoins() {
+        return coins;
+    }
+
+    public void setCoins(ArrayList<Coin> coins) {
+        this.coins = coins;
     }
 }
