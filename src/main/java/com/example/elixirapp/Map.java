@@ -9,7 +9,7 @@ public class Map{
     private ArrayList<Coin> coins = new ArrayList<>();
     private ArrayList<Thief> thieves = new ArrayList<>();
     private ArrayList<Mushroom> mushrooms = new ArrayList<>();
-    private final Stall stall = new Stall(SceneCreator.SCENE_WIDTH-100, 500);
+    private final Stall stall = new Stall(SceneCreator.SCENE_WIDTH*3-150, 490);
 
     private ArrayList<Herb> herbs = new ArrayList<>();
     private Player player;
