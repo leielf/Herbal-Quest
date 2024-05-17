@@ -3,14 +3,18 @@ package com.example.elixirapp;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GameEngine implements Runnable{
+    private AtomicBoolean active = new AtomicBoolean(true);
     private static final Logger logger = Logger.getLogger(GameEngine.class.getName());
     private Thread gameThread;
     private GameStatus gameStatus;
     private LevelLoader levelLoader;
+
+    private DataSaver dataSaver;
     private LevelController levelController;
     private Stage stage;
     private String filePath;
@@ -21,6 +25,7 @@ public class GameEngine implements Runnable{
         this.stage = stage;
         gameStatus = GameStatus.START_SCREEN;
         levelLoader = new LevelLoader();
+        dataSaver = new DataSaver();
     }
 
     public void start(String filePath){
@@ -38,9 +43,17 @@ public class GameEngine implements Runnable{
     public void run() {
         double updateInterval = 1000000000/60;
         double nextUpdateTime = System.nanoTime() + updateInterval;
-        while (gameThread != null){
+        while (active.get()){
             levelController.checkGameStatus();
-            if (gameStatus == GameStatus.RUNNING) {
+            if(gameStatus == GameStatus.START_SCREEN){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        levelController.checkStartScreen();
+                    }
+                });
+            }
+            else if (gameStatus == GameStatus.RUNNING) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -60,10 +73,12 @@ public class GameEngine implements Runnable{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        dataSaver.saveData(levelController.map.getPlayer());
                         end();
                     }
                 });
             }
+            if(!gameThread.isInterrupted()){
             try {
                 double remainingTime = nextUpdateTime - System.nanoTime();
                 remainingTime /= 1000000;
@@ -74,7 +89,7 @@ public class GameEngine implements Runnable{
                 nextUpdateTime += updateInterval;
             }catch (InterruptedException e){
                 logger.log(Level.INFO, "error in thread");
-            }
+            }}
         }
     }
 
@@ -93,5 +108,6 @@ public class GameEngine implements Runnable{
 
     public void end(){
         levelController.endLevel();
+        active.set(false);
     }
 }
