@@ -4,11 +4,14 @@ import com.example.elixirapp.GameEntity.GameObject;
 
 public class Herb extends GameObject {
     private String name;
+
+    private int cost;
     private boolean isCollected;
 
-    public Herb(String name, double x, double y) {
-        super("/red_circle.png", x, y);
+    public Herb(String name, double x, double y, int cost) {
+        super("/"+name+".png", x, y);
         this.name = name;
+        this.cost = cost;
         isCollected = false;
     }
 
@@ -16,15 +19,7 @@ public class Herb extends GameObject {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isCollected() {
-        return isCollected;
-    }
-
-    public void setCollected(boolean collected) {
-        isCollected = collected;
+    public int getCost() {
+        return cost;
     }
 }
