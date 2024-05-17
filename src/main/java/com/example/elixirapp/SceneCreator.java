@@ -1,9 +1,8 @@
 package com.example.elixirapp;
 
-import javafx.event.ActionEvent;
+import com.example.elixirapp.GameEntity.Herb;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +24,10 @@ public class SceneCreator {
 
     private Text acquiredCoins;
     private ImageView acquiredCoinsImg;
+
+    private Popup thiefPopup;
+
+    private Popup description;
 
     private ImageView stall;
     public SceneCreator() {
@@ -59,8 +62,9 @@ public class SceneCreator {
         return scene;
     }
 
-    public Pane createPaneWithText(String text) {
-        Pane pane  = createPane();
+    public Pane createPaneWithText(String text, double x) {
+        Pane pane = new Pane();
+        changeDialogPane(pane, x);
         Text phrase = addPhrase(text);
         phrase.setX((SCENE_WIDTH-phrase.getWrappingWidth())/2);
         phrase.setY((SCENE_HEIGHT-phrase.getBoundsInLocal().getHeight())/2);
@@ -103,83 +107,101 @@ public class SceneCreator {
         return acquiredCoinsImg;
     }
 
-    public void addDescriptionWindow(){
-        Stage descriptionStage = addDialogWindow();
-        Pane root = (Pane) descriptionStage.getScene().getRoot();
-        editDialogPane(root,730, 420, 0);
+    public Popup addDescriptionPopUp(){
+        description = new Popup();
+        Rectangle background = addRectangle(730, 420, (SCENE_WIDTH-730)/2-250, (SCENE_HEIGHT/2-250));
+        description.getContent().add(background);
         //add welcoming phrase
-        Text welcomeText = new Text("WELCOME TO HERBAL QUEST! HERE IS A SHORT DESCRIPTION OF GAME OBJECTS:");
+        String welcomeStr = "WELCOME TO HERBAL QUEST! HERE IS A SHORT DESCRIPTION OF GAME OBJECTS:";
+        Text welcomeText = addDescriptionText(welcomeStr, background.getX()+60, background.getY()+30);
         welcomeText.setWrappingWidth(600);
-        welcomeText.setX(SCENE_WIDTH/2 -300);
-        Font font = Font.loadFont(getClass().getResourceAsStream("/pixel_font.ttf"), 25);
-        welcomeText.setFont(font);
-        welcomeText.setFill(Color.BEIGE);
         welcomeText.setTextAlignment(TextAlignment.CENTER);
-        welcomeText.setY((SCENE_HEIGHT-420)/2+30);
-        root.getChildren().add(welcomeText);
+        description.getContent().add(welcomeText);
         //add thief image and description
         ImageView thief = addImg("/pixel_thief1.png", welcomeText.getX()-50, welcomeText.getY()+70);
-        root.getChildren().add(thief);
+        description.getContent().add(thief);
         String thiefStr = "- on touch with THEIF you lose all the coins you collected.";
-        root.getChildren().add(addDdescriptionText(thiefStr, thief.getX()+70, thief.getY()));
+        description.getContent().add(addDescriptionText(thiefStr, thief.getX()+70, thief.getY()));
         //add coin image and description
         ImageView coin = addImg("/pixel_coin.png",thief.getX()+10, thief.getY()+120);
-        root.getChildren().add(coin);
+        description.getContent().add(coin);
         String coinStr = "- you collect COINS to buy herbs if you were not able to pick up some herbs.";
-        root.getChildren().add(addDdescriptionText(coinStr, coin.getX()+60, coin.getY()-10));
+        description.getContent().add(addDescriptionText(coinStr, coin.getX()+60, coin.getY()-10));
         //add mushroom image and description
         ImageView mushroom = addImg("/pixel_mushroom.png", thief.getX(), coin.getY()+100);
-        root.getChildren().add(mushroom);
+        description.getContent().add(mushroom);
         String mushroomStr = "- on touch with MUSHROOM game is over, you need to start all over.";
-        root.getChildren().add(addDdescriptionText(mushroomStr,mushroom.getX()+70, mushroom.getY()));
+        description.getContent().add(addDescriptionText(mushroomStr,mushroom.getX()+70, mushroom.getY()));
         //add player image and description
-        ImageView player = addImg("/player_right1.png", SCENE_WIDTH/2+50, thief.getY()-20);
-        root.getChildren().add(player);
-        root.getChildren().add(addDdescriptionText("- YOU", player.getX()+50, player.getY()+50));
+        ImageView player = addImg("/player_right1.png", thief.getX()+400, thief.getY()-20);
+        description.getContent().add(player);
+        description.getContent().add(addDescriptionText("- YOU", player.getX()+50, player.getY()+50));
         //add stall image and description
         ImageView stall = addImg("pixel_stall.png", player.getX()-10, player.getY()+160);
-        root.getChildren().add(stall);
+        description.getContent().add(stall);
         String stallStr = "- if you do not have some herbs you can purchase them at the STALL.";
-        Text stallTxt = addDdescriptionText(stallStr, stall.getX()+150, stall.getY());
+        Text stallTxt = addDescriptionText(stallStr, stall.getX()+150, stall.getY());
         stallTxt.setWrappingWidth(190);
-        root.getChildren().add(stallTxt);
+        description.getContent().add(stallTxt);
         //add closing button
         ImageView closeImg = new ImageView(new Image("/pixel_cross.png"));
         closeImg.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                descriptionStage.close();
+                description.hide();
             }
         });
         closeImg.setY(welcomeText.getY()-10);
         closeImg.setX(welcomeText.getX()+620);
-        root.getChildren().add(closeImg);
-        descriptionStage.show();
+        description.getContent().add(closeImg);
+        return description;
     }
 
-    public void addStallPopupWindow(Map map){
-        Stage stallStage = addDialogWindow();
-        Pane root = (Pane)stallStage.getScene().getRoot();
-        int cost = map.getHerbs().size()*map.getStall().getHerbCost();
-        root.getChildren().add(new Text("You are at stall with all the herbs \nyou'll ever need in your life.\nIt seems that you are missing certain herbs from your list.\nWould you like to buy them for only "+cost + " coins?"));
-        Button button = new Button("PURCHASE");
-        button.setEffect(null);
-        button.setStyle("-fx-background-color: transparent; -fx-border-color:black;");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+
+
+    public Popup addStallPopup(Map map){
+        Popup stallPopup = new Popup();
+        Rectangle background = addRectangle(400, 600, 70, SCENE_HEIGHT/2-300);
+        stallPopup.getContent().add(background);
+        int cost = 0;
+        for(Herb herb : map.getHerbs()){
+            cost += herb.getCost();
+        }
+        String startStr = "Hello! You are at the stall where you can find all desired herbs no matter how rare they are!";
+        Text startingPhrase = addDescriptionText(startStr, background.getX() +20, background.getY()+20);
+        startingPhrase.setWrappingWidth(360);
+        if(!map.getHerbs().isEmpty()){
+            String addition = " It seems like you do not have some of the necessary herbs, which are: ";
+            for(Herb herb: map.getHerbs()){
+                addition += "\n" + herb.getName();
+            }
+            addition += "\nBut don't be sad, I have those in stock. "+
+                    "Would you like to purchase the herbs each costing ?? "
+                    + " coins? In total will be only " +cost+ " coins!";
+            startingPhrase.setText(startingPhrase.getText()+addition);
+        }
+        startingPhrase.setTextAlignment(TextAlignment.CENTER);
+        startingPhrase.setY((SCENE_HEIGHT - startingPhrase.getBoundsInLocal().getHeight())/2);
+        stallPopup.getContent().add(startingPhrase);
+        Text purchaseTxt = addDescriptionText("PURCHASE", background.getX()+130,startingPhrase.getBoundsInLocal().getHeight()+startingPhrase.getY()+20);
+        purchaseTxt.setWrappingWidth(160);
+        purchaseTxt.setFill(Color.DARKRED);
+        stallPopup.getContent().add(purchaseTxt);
+        int finalCost = cost;
+        purchaseTxt.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(ActionEvent e) {
-                if(map.getPlayer().getCoins() >= cost){
+            public void handle(MouseEvent mouseEvent) {
+                if(map.getPlayer().getTotalCoins() >= finalCost){
                     map.getStall().setBought(true);
-                    map.getPlayer().setCoins(map.getPlayer().getCoins()-cost);
+                    map.getPlayer().setTotalCoins(map.getPlayer().getTotalCoins()- finalCost);
                 }else{
                     map.getStall().setBought(false);
                 }
                 map.getStall().setExited(true);
-                stallStage.close();
+                stallPopup.hide();
             }
         });
-        root.getChildren().add(button);
-        stallStage.show();
+        return stallPopup;
     }
 
     public ImageView addImg(String imgPath, double x, double y){
@@ -189,7 +211,7 @@ public class SceneCreator {
         return view;
 
     }
-    public Text addDdescriptionText(String txt, double x, double y){
+    public Text addDescriptionText (String txt, double x, double y){
         Font font = Font.loadFont(getClass().getResourceAsStream("/pixel_font.ttf"), 25);
         Text text = new Text(txt);
         text.setFont(font);
@@ -199,38 +221,107 @@ public class SceneCreator {
         text.setY(y);
         return text;
     }
-    public Stage addDialogWindow(){
-        Stage dialogStage = new Stage();
-        dialogStage.initStyle(StageStyle.UNDECORATED);
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        Pane pane = new Pane();
-        dialogStage.setScene(new Scene(pane));
-        return dialogStage;
-    }
 
-    public void editDialogPane(Pane root, double recWidth, double recHeight, double x){
+    public void changeDialogPane(Pane root, double x){
         root.setMinSize(SCENE_WIDTH, SCENE_HEIGHT);
         root.setPrefSize(SCENE_WIDTH, SCENE_HEIGHT);
         root.setMaxSize(SCENE_WIDTH, SCENE_HEIGHT);
         ImageView backgroundView = new ImageView(new Image("/pixel_background_long_blue.png"));
         backgroundView.setX(backgroundView.getX()-x);
         root.getChildren().add(backgroundView);
+    }
+
+    public Rectangle addRectangle(double recWidth, double recHeight, double x, double y){
         Rectangle background = new Rectangle(recWidth, recHeight);
         background.setFill(Color.WHEAT);
         background.setOpacity(0.4);
-        background.setX((SCENE_WIDTH-recWidth)/2);
-        background.setY((SCENE_HEIGHT-recHeight)/2);
-        root.getChildren().add(background);
+        background.setX(x);
+        background.setY(y);
+        return background;
     }
 
-    public void addStall(Pane pane){
-        stall = new ImageView(new Image("/pixel_stall.png"));
-        stall.setY(500);
-        stall.setX(SceneCreator.SCENE_WIDTH-100);
-        pane.getChildren().add(stall);
+    public String choosePhrase(boolean isBought, boolean isExited, GameStatus gameStatus){
+        if(gameStatus == GameStatus.FAIL){
+            if(isExited){
+                return "SORRY, YOU DO NOT HAVE ENOUGH COINS TO PURCHASE NEEDED HERBS. PRESS SPACE TO START AGAIN.";
+            }
+            return "YOU STEPPED ON THE MUSHROOM AND DIED! PRESS SPACE TO TRY AGAIN!";
+        }else if(gameStatus == GameStatus.WIN){
+            return "CONGRATS! YOU PICKED ALL NEEDED HERBS!";
+        }
+        return "PRESS SPACE TO START";
     }
 
-    public void choosePhrase(GameStatus gameStatus){
-
+    public void thiefPopUp(){
+        thiefPopup = new Popup();
+        Text txt = new Text("thief stole all of your coins!");
+        txt.setWrappingWidth(230);
+        txt.setFill(Color.WHITE);
+        Font font = Font.loadFont(getClass().getResourceAsStream("/pixel_font.ttf"), 25);
+        txt.setFont(font);
+        txt.setTextAlignment(TextAlignment.CENTER);
+        thiefPopup.getContent().add(txt);
     }
+
+    public Popup getThiefPopup() {
+        return thiefPopup;
+    }
+
+    public Popup getDescription() {
+        return description;
+    }
+
+
+
+
+//    public Pane addStallPopupWindow(Map map, double x){
+//        Stage stallStage = addDialogWindow();
+//        Pane root = new Pane();
+//        changeDialogPane(root, x);
+//        root.getChildren().add(addRectangle(400, 600));
+//        int cost = map.getHerbs().size();
+//        String startStr = "Hello! You are at the stall where you can find all desired herbs no matter how rare they are!";
+//        Text startingPhrase = addDdescriptionText(startStr, SCENE_WIDTH/2 -180, (SCENE_HEIGHT-400)/2);
+//        startingPhrase.setWrappingWidth(360);
+//        if(!map.getHerbs().isEmpty()){
+//            String addition = " It seems like you do not have some of the necessary herbs, which are: ";
+//            for(Herb herb: map.getHerbs()){
+//                addition += "\n" + herb.getName();
+//            }
+//            addition += "\nBut don't be sad, I have those in stock. "+
+//                    "Would you like to purchase the herbs each costing ?? "
+//                    + " coins? In total will be only " +cost+ " coins!";
+//            startingPhrase.setText(startingPhrase.getText()+addition);
+//        }
+//        startingPhrase.setTextAlignment(TextAlignment.CENTER);
+//        startingPhrase.setY((SCENE_HEIGHT - startingPhrase.getBoundsInLocal().getHeight())/2);
+//        root.getChildren().add(startingPhrase);
+//        Text purchaseTxt = addDdescriptionText("PURCHASE", SCENE_WIDTH/2-80,startingPhrase.getBoundsInLocal().getHeight()+startingPhrase.getY()+20);
+//        purchaseTxt.setWrappingWidth(160);
+//        purchaseTxt.setFill(Color.DARKRED);
+//        root.getChildren().add(purchaseTxt);
+//        purchaseTxt.setOnMouseClicked(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent mouseEvent) {
+//                if(map.getPlayer().getTotalCoins() >= cost){
+//                    map.getStall().setBought(true);
+//                    map.getPlayer().setTotalCoins(map.getPlayer().getTotalCoins()-cost);
+//                }else{
+//                    map.getStall().setBought(false);
+//                }
+//                map.getStall().setExited(true);
+//                stallStage.close();
+//            }
+//        });
+//        return root;
+//    }
+
+//    public Stage addDialogWindow(){
+//        Stage dialogStage = new Stage();
+//        dialogStage.initStyle(StageStyle.UNDECORATED);
+//        dialogStage.initModality(Modality.WINDOW_MODAL);
+//        Pane pane = new Pane();
+//        dialogStage.setScene(new Scene(pane));
+//        return dialogStage;
+//    }
 }
