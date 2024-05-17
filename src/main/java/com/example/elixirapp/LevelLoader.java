@@ -130,7 +130,8 @@ public class LevelLoader {
             final String name = (String) herbJson.get("name");
             final double x = ((Number) herbJson.get("x")).doubleValue();
             final double y = ((Number) herbJson.get("y")).doubleValue();
-            Herb herb = new Herb(name, x, y);
+            final int cost = ((Number) herbJson.get("cost")).intValue();
+            Herb herb = new Herb(name, x, y, cost);
             herb.setHeight(40);
             herb.setWidth(40);
             herbs.add(herb);
