@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
@@ -18,14 +19,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Connects logic and UI together
- * Draws the level itself based on the map it receives in constructor
- * {@link com.example.elixirapp.Map}
- * @author Leila Babayeva
- * Pane contains instances of ImageView, each ImageView is in acordance
- * to the objects of the map (have the same order in arraylists as in the
- * arraylists (blocks, thieves, mushrooms, coins) of the map)
+ * The SceneController class connects the logic and UI together, drawing the level itself
+ * based on the map it receives in the constructor.
+ * It handles adding game objects to the scene, updating the UI, processing user input,
+ * and managing the game state transitions.
+ * <p>
+ * Pane contains instances of ImageView, each ImageView corresponds to the objects
+ * of the map and maintains the same order as in the map's arraylists (blocks, thieves, mushrooms, coins).
+ * </p>
  *
+ * {@link com.example.elixirapp.Map}
+ * {@link com.example.elixirapp.SceneCreator}
+ *
+ * Author: Leila Babayeva
  */
 public class SceneController {
 
@@ -53,6 +59,12 @@ public class SceneController {
         this.gameEngine = gameEngine;
     }
 
+    /**
+     * Moves the background based on the player's movement direction and velocity.
+     *
+     * @param isRight true if the player is moving right, false otherwise
+     * @param velX the horizontal velocity of the player
+     */
     public void moveBackground(boolean isRight, int velX){
         if (isRight) {
             if(clip.getX() <= pane.getMaxWidth()*2/3){
@@ -64,8 +76,7 @@ public class SceneController {
     }
 
     /**
-     * Adding coins counter to the Pane for the player to know
-     * how many coins the player collected.
+     * Adds all game objects' ImageViews to the pane.
      */
     public void addObjects(){
         if(!coinsImgView.isEmpty()){
@@ -91,6 +102,9 @@ public class SceneController {
         }
     }
 
+    /**
+     * Fills the image arrays with ImageViews corresponding to the game objects in the map.
+     */
     public void fillImgArrays(){
         for(Block block: map.getBlocks()){
             addGameObject(block);
@@ -110,8 +124,9 @@ public class SceneController {
     }
 
     /**
-     * adding one object to the pane
-     * @param obj object that is supposed to be added to the pane
+     * Adds a game object to the pane by creating an ImageView for it.
+     *
+     * @param obj the game object to be added to the pane
      */
     public void addGameObject(GameObject obj){
         if (obj !=null && !obj.getImagePath().isEmpty()){
@@ -124,12 +139,12 @@ public class SceneController {
         }
     }
 
+
     /**
-     * Adding game objects to the UIController's arraylists with ImageViews
-     * to be able to update their positions later on in the code
-     * @param obj object that is instance of one of the subclasses of the
-     *            class GameObject {@link GameObject}
-     * @param view respective ImageView to the obj
+     * Adds game objects to the SceneController's arraylists with ImageViews to be able to update their positions later on.
+     *
+     * @param obj the game object that is an instance of one of the subclasses of the class GameObject {@link GameObject}
+     * @param view the respective ImageView for the obj
      */
     public void addToImgArray(GameObject obj, ImageView view){
         if(obj instanceof Block) {
@@ -162,9 +177,13 @@ public class SceneController {
         }
     }
 
+    /**
+     * Switches the screen based on the current game status and updates the scene accordingly.
+     *
+     * @param stage the primary stage for the game window
+     */
     public void switchScreen(Stage stage){
-        String txt = sceneCreator.choosePhrase(map.getStall().isBought(),
-                map.getStall().isExited(), gameEngine.getGameStatus());
+        String txt = sceneCreator.choosePhrase(map.getStall().isExited(), gameEngine.getGameStatus());
         switch (gameEngine.getGameStatus()){
             case GameStatus.START_SCREEN:
                 scene.setRoot(sceneCreator.createPaneWithText(txt, 0));
@@ -194,11 +213,16 @@ public class SceneController {
         }
     }
 
+    /**
+     * Creates the map and initializes the scene with game objects and event handlers.
+     *
+     * @param stage the primary stage for the game window
+     */
     public void createMap(Stage stage){
         if(loadMap){
             fillImgArrays();
             map.getPlayer().setDead(false);
-            pane = sceneCreator.createPane();
+            pane = sceneCreator.createPane(0);
             sceneCreator.addCoinsCounter(pane);
             scene.setRoot(pane);
             scene.setOnKeyPressed(e -> processKey(e.getCode(), true));
@@ -223,8 +247,7 @@ public class SceneController {
     }
 
     /**
-     * Updating the positions of the objects in the Pane, shifting
-     * the background according to the position of the player
+     * Updates the positions of the objects in the pane, shifting the background according to the player's position.
      */
     public void updateUI(){
         try {
@@ -288,6 +311,9 @@ public class SceneController {
         this.map = map;
     }
 
+    /**
+     * Clears all ImageView arrays.
+     */
     public void clearImgArrays(){
         imgNum =1;
         imgCounter = 0;
@@ -306,6 +332,9 @@ public class SceneController {
         return herbsImgView;
     }
 
+    /**
+     * Handles the player's movement animation.
+     */
     public void playerMovement(){
         if(imgCounter>7){
             if(imgNum == 1) imgNum = 2;
@@ -330,6 +359,12 @@ public class SceneController {
         }
     }
 
+    /**
+     * Handles the thief's movement animation.
+     *
+     * @param thief the thief object
+     * @param thiefView the ImageView corresponding to the thief
+     */
     public void thiefMovement(Thief thief, ImageView thiefView){
         if(thief.isRight()){
             thiefView.setImage(new Image(thief.getImgRight()));
@@ -338,17 +373,29 @@ public class SceneController {
         }
     }
 
-    public boolean isDescritpionShowing(){
+    public boolean isDescriptionShowing(){
         return sceneCreator.getDescription().isShowing();
     }
 
+    /**
+     * Shows the description popup at the start of the game.
+     *
+     * @param stage the primary stage for the game window
+     */
     public void showDescriptionPopup(Stage stage){
-        scene = sceneCreator.createScene(sceneCreator.createPaneWithText("",0));
+        scene = new Scene(new BorderPane(sceneCreator.createPane(0)),
+                sceneCreator.SCENE_WIDTH, sceneCreator.SCENE_HEIGHT);
         stage.setScene(scene);
         stage.show();
         sceneCreator.addDescriptionPopUp();
         sceneCreator.getDescription().show(stage);
     }
+
+    /**
+     * Shows a popup when the thief steals all the player's coins.
+     *
+     * @param stage the primary stage for the game window
+     */
     public void showThiefPopup(Stage stage){
         ScheduledExecutorService executor =  Executors.newSingleThreadScheduledExecutor();
         Popup thiefPopup = sceneCreator.getThiefPopup();
@@ -358,12 +405,7 @@ public class SceneController {
             thiefPopup.show(stage);
             executor.submit(() -> Platform.runLater(stage::show));
             executor.schedule(
-                    () -> Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            thiefPopup.hide();
-                        }
-                    })
+                    () -> Platform.runLater(thiefPopup::hide)
                     , 2
                     , TimeUnit.SECONDS);
         }

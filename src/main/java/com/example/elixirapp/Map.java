@@ -3,8 +3,12 @@ import com.example.elixirapp.GameEntity.*;
 
 import java.util.ArrayList;
 
+/**
+ * The Map class represents the game world, containing all game entities such as blocks,
+ * coins, thieves, mushrooms, herbs, and the player.
+ * It also includes methods to update the locations of these entities.
+ */
 public class Map{
-
     private ArrayList<Block> blocks = new ArrayList<>();
     private ArrayList<Coin> coins = new ArrayList<>();
     private ArrayList<Thief> thieves = new ArrayList<>();
@@ -16,6 +20,10 @@ public class Map{
 
     public Map(){
     }
+
+    /**
+     * Updates the locations of all movable entities in the map, including the player, thieves, and mushrooms.
+     */
     public void updateLocations(){
         if(player!=null){
             player.updateLocation();

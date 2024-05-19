@@ -2,12 +2,16 @@ package com.example.elixirapp.GameEntity;
 
 import java.util.ArrayList;
 
+/**
+ * The Player class represents the player character in the game.
+ * The player can collect coins and herbs, jump, move left and right, and has attributes for managing state and movement.
+ */
 public class Player extends GameObject {
     private int totalCoins = 0;
     private boolean isDead;
-    private ArrayList<Herb> herbs;
-    private ArrayList<Coin> coins;
-    private String right1, right2, left1, left2;
+    private final ArrayList<Herb> herbs;
+    private final ArrayList<Coin> coins;
+    private final String right1, right2, left1, left2;
 
     private boolean right = false;
     private boolean left = false;
@@ -15,8 +19,6 @@ public class Player extends GameObject {
 
     private boolean falling;
     private double velY;
-    private double gravityAcc;
-
     private double min, max;
     public Player(double x, double y, int velX) {
         super("/player_right1.png", x, y);
@@ -41,20 +43,8 @@ public class Player extends GameObject {
         this.falling = falling;
     }
 
-    public double getVelY() {
-        return velY;
-    }
-
     public void setVelY(int velY) {
         this.velY = velY;
-    }
-
-    public double getGravityAcc() {
-        return gravityAcc;
-    }
-
-    public void setGravityAcc(double gravityAcc) {
-        this.gravityAcc = gravityAcc;
     }
 
     public void move() {
@@ -129,12 +119,12 @@ public class Player extends GameObject {
             falling = true;
         }
         else if(jumping){
-            velY = velY - gravityAcc;
+            velY = velY - getGravityAcc();
             setY(getY()  - velY);
         }
         if(falling){
             setY(getY()  + velY);
-            velY = velY + gravityAcc;
+            velY = velY + getGravityAcc();
         }
     }
 
@@ -179,7 +169,4 @@ public class Player extends GameObject {
         return coins;
     }
 
-    public void setCoins(ArrayList<Coin> coins) {
-        this.coins = coins;
-    }
 }

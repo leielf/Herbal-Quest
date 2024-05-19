@@ -13,9 +13,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Loads objects from JSON file and creates Map for the level
- * @author Leila Babayeva
-*/
+ * The LevelLoader class is responsible for loading level data from a JSON file and creating a Map for the level.
+ * It parses the JSON file and creates game entities such as coins, blocks, thieves, mushrooms, herbs, and the player.
+ *
+ * Author: Leila Babayeva
+ */
 public class LevelLoader {
 
     Map map;
@@ -25,6 +27,11 @@ public class LevelLoader {
         map = new Map();
     }
 
+    /**
+     * Loads level data from the specified JSON file path.
+     *
+     * @param filePath the file path of the JSON file containing the level data
+     */
     public void loadLevelData(String filePath) {
         JSONParser parser = new JSONParser();
         try {
@@ -36,6 +43,11 @@ public class LevelLoader {
         }
     }
 
+    /**
+     * Loads data from the given JSON object and populates the map with game entities.
+     *
+     * @param jsonLevel the JSON object containing the level data
+     */
     public void loadData(JSONObject jsonLevel) {
         JSONArray coinsArray = (JSONArray) jsonLevel.get("coins");
         JSONArray blocksArray = (JSONArray) jsonLevel.get("blocks");
@@ -132,19 +144,24 @@ public class LevelLoader {
             final double y = ((Number) herbJson.get("y")).doubleValue();
             final int cost = ((Number) herbJson.get("cost")).intValue();
             Herb herb = new Herb(name, x, y, cost);
-            herb.setHeight(40);
-            herb.setWidth(40);
             herbs.add(herb);
         }
         map.setHerbs(herbs);
     }
 
     public void loadPlayer() {
-        Player player = new Player(SceneCreator.SCENE_WIDTH / 2, 500, 6);
+        Player player = new Player((double) 100, 500, 6);
         player.setX(player.getX() - player.getWidth());
         map.setPlayer(player);
     }
 
+    /**
+     * Checks and adjusts the coordinates of game objects to ensure they are within valid bounds.
+     *
+     * @param obj the game object to check
+     * @param x the x-coordinate to validate
+     * @param y the y-coordinate to validate
+     */
     public void checkCoordinates(GameObject obj, double x, double y){
         if(x < obj.getWidth()) obj.setX(obj.getWidth() + 1);
         if(x > SceneCreator.SCENE_WIDTH*5) obj.setX(SceneCreator.SCENE_WIDTH*5 - 5- obj.getWidth());

@@ -3,6 +3,10 @@ package com.example.elixirapp.GameEntity;
 import java.awt.*;
 import javafx.scene.image.Image;
 
+/**
+ * The GameObject class represents an abstract base class for all game entities.
+ * It provides common properties and methods for game objects, such as position, size, velocity, and collision detection.
+ */
 public abstract class GameObject {
     private double x, y;
 
@@ -10,12 +14,13 @@ public abstract class GameObject {
     private boolean falling;
     private double velY;
     private double velX;
-    private double gravityAcc = 0.3;
+    private double gravityAcc;
     private String imagePath = "";
     public GameObject(String imagePath, double x, double y) {
         this.x = x;
         this.y = y;
         this.imagePath = imagePath;
+        gravityAcc = 0.3;
         this.falling = false;
         setWidthHeight();
     }
@@ -34,14 +39,8 @@ public abstract class GameObject {
     public double getWidth() {
         return width;
     }
-    public void setWidth(double width) {
-        this.width = width;
-    }
     public double getHeight() {
         return height;
-    }
-    public void setHeight(double height) {
-        this.height = height;
     }
 
     /**
@@ -113,21 +112,12 @@ public abstract class GameObject {
         this.falling = falling;
     }
 
-
-    public double getVelY() {
-        return velY;
-    }
-
     public void setVelY(int velY) {
         this.velY = velY;
     }
 
     public String getImagePath() {
         return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public double getVelX() {
@@ -142,5 +132,13 @@ public abstract class GameObject {
         Image img = new Image(imagePath);
         height = img.getHeight();
         width = img.getWidth();
+    }
+
+    public void setGravityAcc(double gravityAcc){
+        this.gravityAcc = gravityAcc;
+    }
+
+    public double getGravityAcc(){
+        return gravityAcc;
     }
 }

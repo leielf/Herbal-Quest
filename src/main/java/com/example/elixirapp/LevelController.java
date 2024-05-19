@@ -9,12 +9,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * processing interactions between objects and checking
- * the game's status.
+ * The LevelController class processes interactions between objects and checks the game's status.
+ * It handles collision detection, level creation, and game state updates.
  */
 public class LevelController{
     private static final Logger logger = Logger.getLogger(LevelController.class.getName());
-    private GameEngine gameEngine;
+    private final GameEngine gameEngine;
     Map map;
     private SceneController sceneController;
 
@@ -30,6 +30,9 @@ public class LevelController{
         this.stage = stage;
     }
 
+    /**
+     * Checks for collisions between the player and various game entities, and processes the results.
+     */
     public void checkCollisions(){
         if(!map.getBlocks().isEmpty()){
             checkBottomCollisions();
@@ -55,6 +58,10 @@ public class LevelController{
         }
     }
 
+    /**
+     * Checks for collisions between the player and herbs. If a collision occurs, the herb
+     * is collected and removed from the map.
+     */
     public void checkHerbsCollisions(){
         ArrayList<Herb> toBeRemoved = new ArrayList<>();
         ArrayList<ImageView> imgToBeRemoved = new ArrayList<>();
@@ -78,19 +85,27 @@ public class LevelController{
         sceneController.getHerbsImgView().removeAll(imgToBeRemoved);
     }
 
+    /**
+     * Checks for collisions between the player and the stall. If a collision occurs,
+     * processes the interaction based on the player's herb collection status.
+     */
     public void checkStallCollisions(){
         if(!map.getStall().isEntered()){
             if(map.getPlayer().getBounds().intersects(map.getStall().getBounds())){
-                map.getStall().setEntered(true);
-                map.getPlayer().setVelX(0);
-                map.getPlayer().setX(map.getStall().getX()-map.getPlayer().getWidth()-2);
+                if(!map.getHerbs().isEmpty()){
+                    map.getStall().setEntered(true);
+                    map.getPlayer().setVelX(0);
+                    map.getPlayer().setX(map.getStall().getX()-map.getPlayer().getWidth()-2);
+                }else{
+                    gameEngine.setGameStatus(GameStatus.WIN);
+                }
             }
         }
     }
+
     /**
-     * checking whether the player is stepping on the block.
-     * If so, player's Y value is changed for him to be on top of
-     * the block
+     * Checks if the player is stepping on a block. If so, adjusts the player's Y value
+     * to place them on top of the block.
      */
     public void checkBottomCollisions(){
         if (!map.getPlayer().isJumping()){
@@ -105,8 +120,7 @@ public class LevelController{
     }
 
     /**
-     * checking if the player collides with the bottom part of the blocks.
-     * If so, falls down after collision.
+     * Checks if the player collides with the bottom part of blocks. If so, the player falls down after collision.
      */
     public void checkTopCollisions(){
         for (Block block: map.getBlocks()) {
@@ -119,8 +133,7 @@ public class LevelController{
     }
 
     /**
-     * checking if the player collides with the sides of the block.
-     * If so, he cannot go through the block.
+     * Checks if the player collides with the sides of blocks. If so, the player cannot go through the block.
      */
     public void checkPlayerLeftRightCollisions(){
         java.awt.Rectangle playerSideBounds = map.getPlayer().isLeft() ? map.getPlayer().getLeftBounds() : map.getPlayer().getRightBounds();
@@ -137,8 +150,7 @@ public class LevelController{
 
     /**
      * checking if the player touches the coin. If so, it disappears
-     * from the Pane and the player's coin count is increase by the value
-     * of the collected coin.
+     * and the player's coin count is increase by the coin's value
      */
     public void checkCoinsCollisions(){
         ArrayList<Coin> toBeRemoved = new ArrayList<>();
@@ -192,8 +204,8 @@ public class LevelController{
     }
 
     /**
-     * If a thief is (for some reason) not located on the block, then
-     * it falls down on the closest block underneath him.
+     * Checks if a thief is levitating (not located on a block). If so, the thief falls
+     * down to the closest block underneath.
      */
     public void checkIsThiefLevitating(){
         for(Block block: map.getBlocks()){
@@ -211,8 +223,8 @@ public class LevelController{
     }
 
     /**
-     * If a mushroom is (for some reason) not located on the block, then
-     * it falls down on the closest block underneath him.
+     * Checks if a mushroom is levitating (not located on a block). If so, the mushroom
+     * falls down to the closest block underneath.
      */
     public void checkIsMushroomLevitating(){
         for(Block block: map.getBlocks()){
@@ -230,17 +242,10 @@ public class LevelController{
         }
     }
 
+    /**
+      * Updates the game state by checking collisions, updating locations, and refreshing the UI.
+      */
     public void gameUpdate(){
-        if(map.getStall().isEntered()){
-            sceneController.switchScreen(stage);
-        }
-        if(map.getStall().isExited()){
-            if(map.getStall().isBought()){
-                gameEngine.setGameStatus(GameStatus.WIN);
-            }else{
-                gameEngine.setGameStatus(GameStatus.FAIL);
-            }
-        }
         if(gameEngine.getGameStatus() == GameStatus.RUNNING){
             checkCollisions();
             map.updateLocations();
@@ -259,7 +264,22 @@ public class LevelController{
                 }
             });
         }
+        if(map.getStall().isEntered()){
+            sceneController.switchScreen(stage);
+        }
+        if(map.getStall().isExited()){
+            if(map.getStall().isBought()){
+                gameEngine.setGameStatus(GameStatus.WIN);
+            }else{
+                gameEngine.setGameStatus(GameStatus.FAIL);
+            }
+        }
     }
+
+    /**
+     * Resets the level with a new map, updates the SceneController, and checks if the map should be loaded.
+     * @param map the new map to be loaded
+     */
     public void reset(Map map){
         this.map = map;
         sceneController.setMap(map);
@@ -277,8 +297,11 @@ public class LevelController{
         }
     }
 
+    /**
+     * Checks if the description screen is being displayed. If not, switches the screen.
+     */
     public void checkStartScreen(){
-        if(!sceneController.isDescritpionShowing()){
+        if(!sceneController.isDescriptionShowing()){
             sceneController.switchScreen(stage);
         }
     }
