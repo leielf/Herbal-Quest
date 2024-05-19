@@ -11,6 +11,8 @@ public class ElixirApplication extends Application{
 
     @Override
     public void start(Stage stage) throws IOException {
+        LoggerController loggerController = new LoggerController();
+        loggerController.disableLoggingForClasses(false);
         stage.initStyle(StageStyle.UNDECORATED);
         GameEngine gameEngine = new GameEngine(stage);
         gameEngine.start("/Users/leielf/Downloads/firstlevel.json");
