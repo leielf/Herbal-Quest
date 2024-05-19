@@ -141,4 +141,12 @@ public abstract class GameObject {
     public double getGravityAcc(){
         return gravityAcc;
     }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public double getVelY() {
+        return velY;
+    }
 }
