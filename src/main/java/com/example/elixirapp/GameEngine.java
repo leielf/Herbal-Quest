@@ -18,8 +18,8 @@ public class GameEngine implements Runnable{
     private static final Logger logger = Logger.getLogger(GameEngine.class.getName());
     private Thread gameThread;
     private GameStatus gameStatus;
-    private final LevelLoader levelLoader;
-    private final DataSaver dataSaver;
+    private  LevelLoader levelLoader;
+    private  DataSaver dataSaver;
     private LevelController levelController;
     private final Stage stage;
     private String filePath;
@@ -47,7 +47,7 @@ public class GameEngine implements Runnable{
         this.filePath = filePath;
         levelLoader.loadLevelData(filePath);
         levelController = new LevelController(this, levelLoader.getMap());
-        levelController.createLevel(stage);
+        levelController.createLevel();
         startGameThread();
     }
     public void startGameThread(){
@@ -64,7 +64,6 @@ public class GameEngine implements Runnable{
         double updateInterval = 1000000000/60;
         double nextUpdateTime = System.nanoTime() + updateInterval;
         while (active.get()){
-            logger.log(Level.INFO, "GAME IS RUNNING!");
             levelController.checkGameStatus();
             if(gameStatus == GameStatus.START_SCREEN){
                 Platform.runLater(new Runnable() {
@@ -109,9 +108,10 @@ public class GameEngine implements Runnable{
                 Thread.sleep((long)remainingTime);
                 nextUpdateTime += updateInterval;
             }catch (InterruptedException e){
-                logger.log(Level.INFO, "error in thread");
+                logger.log(Level.INFO, "ERROR in thread.");
             }}
         }
+        logger.log(Level.INFO, "Game ended.");
     }
 
     public GameStatus getGameStatus() {
@@ -136,5 +136,9 @@ public class GameEngine implements Runnable{
     public void end(){
         levelController.endLevel();
         active.set(false);
+    }
+
+    public Stage getStage(){
+        return stage;
     }
 }
