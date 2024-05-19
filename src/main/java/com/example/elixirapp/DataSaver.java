@@ -1,6 +1,5 @@
 package com.example.elixirapp;
 
-import com.example.elixirapp.GameEntity.Player;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
