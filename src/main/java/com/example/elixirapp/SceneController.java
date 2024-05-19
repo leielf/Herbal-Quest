@@ -9,7 +9,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Popup;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -45,11 +44,11 @@ public class SceneController {
     private final ArrayList<ImageView> thievesImgView = new ArrayList<>();
     private final ArrayList<ImageView> mushroomsImgView = new ArrayList<>();
     private final ArrayList<ImageView> herbsImgView = new ArrayList<>();
-    javafx.scene.shape.Rectangle clip;
-    private ImageView playerImgView;
-    private ImageView stallView;
-    private Pane pane;
-    private Scene scene;
+    javafx.scene.shape.Rectangle clip = new Rectangle();
+    private ImageView playerImgView = new ImageView();
+    private ImageView stallView = new ImageView();
+    private Pane pane = new Pane();
+    private Scene scene = new Scene(pane);
 
     private int imgCounter = 0;
     private int imgNum = 1;
@@ -179,24 +178,22 @@ public class SceneController {
 
     /**
      * Switches the screen based on the current game status and updates the scene accordingly.
-     *
-     * @param stage the primary stage for the game window
      */
-    public void switchScreen(Stage stage){
+    public void switchScreen(){
         String txt = sceneCreator.choosePhrase(map.getStall().isExited(), gameEngine.getGameStatus());
         switch (gameEngine.getGameStatus()){
             case GameStatus.START_SCREEN:
                 scene.setRoot(sceneCreator.createPaneWithText(txt, 0));
                 scene.setOnKeyPressed(e -> processKey(e.getCode(), true));
                 scene.setOnKeyReleased(e -> processKey(e.getCode(), false));
-                stage.setScene(scene);
-                stage.show();
+                gameEngine.getStage().setScene(scene);
+                gameEngine.getStage().show();
                 break;
             case GameStatus.FAIL, GameStatus.WIN:
                 clearImgArrays();
                 scene.setRoot(sceneCreator.createPaneWithText(txt, clip.getX()));
-                stage.setScene(scene);
-                stage.show();
+                gameEngine.getStage().setScene(scene);
+                gameEngine.getStage().show();
                 break;
             default:
                 sceneCreator.thiefPopUp();
@@ -204,10 +201,10 @@ public class SceneController {
                     map.getStall().setEntered(false);
                     imgNum = 0;
                     scene.setRoot(sceneCreator.createPaneWithText("", clip.getX()));
-                    stage.setScene(scene);
-                    stage.show();
+                    gameEngine.getStage().setScene(scene);
+                    gameEngine.getStage().show();
                     Popup stallPopup = sceneCreator.addStallPopup(map);
-                    stallPopup.show(stage);
+                    stallPopup.show(gameEngine.getStage());
                 }
                 break;
         }
@@ -215,10 +212,8 @@ public class SceneController {
 
     /**
      * Creates the map and initializes the scene with game objects and event handlers.
-     *
-     * @param stage the primary stage for the game window
      */
-    public void createMap(Stage stage){
+    public void createMap(){
         if(loadMap){
             fillImgArrays();
             map.getPlayer().setDead(false);
@@ -231,12 +226,12 @@ public class SceneController {
             addGameObject(map.getPlayer());
             addGameObject(map.getStall());
             addObjects();
-            stage.setScene(scene);
+            gameEngine.getStage().setScene(scene);
             map.getPlayer().setMax(pane.getMaxWidth()-map.getPlayer().getWidth());
             map.getStall().setExited(false);
             map.getStall().setBought(false);
             map.getStall().setEntered(false);
-            stage.show();
+            gameEngine.getStage().show();
             gameEngine.setGameStatus(GameStatus.RUNNING);
             loadMap = false;
         }
@@ -379,36 +374,56 @@ public class SceneController {
 
     /**
      * Shows the description popup at the start of the game.
-     *
-     * @param stage the primary stage for the game window
      */
-    public void showDescriptionPopup(Stage stage){
+    public void showDescriptionPopup(){
         scene = new Scene(new BorderPane(sceneCreator.createPane(0)),
                 sceneCreator.SCENE_WIDTH, sceneCreator.SCENE_HEIGHT);
-        stage.setScene(scene);
-        stage.show();
+        gameEngine.getStage().setScene(scene);
+        gameEngine.getStage().show();
         sceneCreator.addDescriptionPopUp();
-        sceneCreator.getDescription().show(stage);
+        sceneCreator.getDescription().show(gameEngine.getStage());
     }
 
     /**
      * Shows a popup when the thief steals all the player's coins.
-     *
-     * @param stage the primary stage for the game window
      */
-    public void showThiefPopup(Stage stage){
+    public void showThiefPopup(){
         ScheduledExecutorService executor =  Executors.newSingleThreadScheduledExecutor();
         Popup thiefPopup = sceneCreator.getThiefPopup();
         if(!thiefPopup.isShowing()){
-            thiefPopup.setX(stage.getX()+30);
-            thiefPopup.setY(stage.getY()+20);
-            thiefPopup.show(stage);
-            executor.submit(() -> Platform.runLater(stage::show));
+            thiefPopup.setX(gameEngine.getStage().getX()+30);
+            thiefPopup.setY(gameEngine.getStage().getY()+20);
+            thiefPopup.show(gameEngine.getStage());
+            executor.submit(() -> Platform.runLater(gameEngine.getStage()::show));
             executor.schedule(
                     () -> Platform.runLater(thiefPopup::hide)
                     , 2
                     , TimeUnit.SECONDS);
         }
-
     }
+
+    public ImageView getPlayerImgView() {
+        return playerImgView;
+    }
+
+    public SceneCreator getSceneCreator() {
+        return sceneCreator;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public ArrayList<ImageView> getBlocksImgView() {
+        return blocksImgView;
+    }
+
+    public ArrayList<ImageView> getThievesImgView() {
+        return thievesImgView;
+    }
+
+    public ArrayList<ImageView> getMushroomsImgView() {
+        return mushroomsImgView;
+    }
+
 }

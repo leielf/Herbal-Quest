@@ -2,7 +2,6 @@ package com.example.elixirapp;
 import com.example.elixirapp.GameEntity.*;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -18,16 +17,14 @@ public class LevelController{
     Map map;
     private SceneController sceneController;
 
-    Stage stage;
     public LevelController(GameEngine gameEngine, Map map) {
         this.gameEngine = gameEngine;
         this.map = map;
     }
 
-    public void createLevel(Stage stage){
+    public void createLevel(){
         sceneController = new SceneController(map, gameEngine);
-        sceneController.showDescriptionPopup(stage);
-        this.stage = stage;
+        sceneController.showDescriptionPopup();
     }
 
     /**
@@ -184,7 +181,7 @@ public class LevelController{
             if(thief.getBounds().intersects(map.getPlayer().getBounds())){
                 map.getPlayer().setTotalCoins(0);
                 map.getPlayer().getCoins().clear();
-                sceneController.showThiefPopup(stage);
+                sceneController.showThiefPopup();
             }
         }
     }
@@ -260,12 +257,12 @@ public class LevelController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    sceneController.createMap(stage);
+                    sceneController.createMap();
                 }
             });
         }
         if(map.getStall().isEntered()){
-            sceneController.switchScreen(stage);
+            sceneController.switchScreen();
         }
         if(map.getStall().isExited()){
             if(map.getStall().isBought()){
@@ -283,17 +280,17 @@ public class LevelController{
     public void reset(Map map){
         this.map = map;
         sceneController.setMap(map);
-        sceneController.switchScreen(stage);
+        sceneController.switchScreen();
         checkIsLoadMap();
     }
 
     public void endLevel(){
-        sceneController.switchScreen(stage);
+        sceneController.switchScreen();
     }
 
     public void checkIsLoadMap(){
         if(sceneController.isLoadMap()){
-            sceneController.createMap(stage);
+            sceneController.createMap();
         }
     }
 
@@ -302,7 +299,11 @@ public class LevelController{
      */
     public void checkStartScreen(){
         if(!sceneController.isDescriptionShowing()){
-            sceneController.switchScreen(stage);
+            sceneController.switchScreen();
         }
+    }
+
+    public Map getMap() {
+        return map;
     }
 }
