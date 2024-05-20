@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static javafx.application.Platform.exit;
+
 /**
  * The GameEngine class manages the main game loop, updating the game state, and
  * handling transitions between different game states.
@@ -46,9 +48,13 @@ public class GameEngine implements Runnable{
     public void start(String filePath){
         this.filePath = filePath;
         levelLoader.loadLevelData(filePath);
-        levelController = new LevelController(this, levelLoader.getMap());
-        levelController.createLevel();
-        startGameThread();
+        if(levelLoader.isLoaded()){
+            levelController = new LevelController(this, levelLoader.getMap());
+            levelController.createLevel();
+            startGameThread();
+        }else{
+            exit();
+        }
     }
     public void startGameThread(){
         gameThread = new Thread(this);

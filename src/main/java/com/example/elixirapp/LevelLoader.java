@@ -12,6 +12,8 @@ import org.json.simple.parser.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static javafx.application.Platform.exit;
+
 /**
  * The LevelLoader class is responsible for loading level data from a JSON file and creating a Map for the level.
  * It parses the JSON file and creates game entities such as coins, blocks, thieves, mushrooms, herbs, and the player.
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
 public class LevelLoader {
 
     Map map;
+    private boolean isLoaded;
     private static final Logger logger = Logger.getLogger(LevelLoader.class.getName());
 
     public LevelLoader() {
@@ -38,8 +41,11 @@ public class LevelLoader {
             FileReader reader = new FileReader(filePath);
             JSONObject jsonLevel = (JSONObject) parser.parse(reader);
             loadData(jsonLevel);
+            isLoaded = true;
+            logger.log(Level.INFO, "Level was loaded.");
         } catch (ParseException | IOException e) {
             logger.log(Level.SEVERE, "Error occured while parsing file");
+            isLoaded = false;
         }
     }
 
@@ -172,5 +178,7 @@ public class LevelLoader {
         return map;
     }
 
-
+    public boolean isLoaded() {
+        return isLoaded;
+    }
 }
