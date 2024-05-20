@@ -15,7 +15,7 @@ public class ElixirApplication extends Application{
         loggerController.disableLoggingForClasses(false);
         stage.initStyle(StageStyle.UNDECORATED);
         GameEngine gameEngine = new GameEngine(stage);
-        gameEngine.start("/Users/leielf/Downloads/firstlevel.json");
+        gameEngine.start("firstlevel.json");
     }
 
     public static void main(String[] args) {
