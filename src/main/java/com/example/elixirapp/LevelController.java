@@ -165,7 +165,6 @@ public class LevelController{
                 toBeRemoved.add(map.getCoins().get(i));
                 imgToBeRemoved.add(coin);
                 map.getPlayer().collectCoin(map.getCoins().get(i));
-                logger.log(Level.INFO, "Player currently has " + map.getPlayer().getTotalCoins());
             }
         }
         map.getCoins().removeAll(toBeRemoved);
