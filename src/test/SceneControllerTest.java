@@ -145,7 +145,6 @@ public class SceneControllerTest extends ApplicationTest {
             sceneController.getSceneCreator().thiefPopUp();
             sceneController.showThiefPopup();
             Popup thiefPopup = sceneController.getSceneCreator().getThiefPopup();
-            // Wait for the popup to hide
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {

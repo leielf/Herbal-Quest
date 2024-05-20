@@ -13,7 +13,6 @@ public class GameObjectTest extends ApplicationTest {
 
     private GameObject gameObject;
 
-    // A concrete subclass of GameObject for testing purposes
     private class TestGameObject extends GameObject {
         public TestGameObject(String imagePath, double x, double y) {
             super(imagePath, x, y);
@@ -22,14 +21,11 @@ public class GameObjectTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        // This method is required by ApplicationTest
     }
 
     @BeforeEach
     public void setUp() {
-        // Run this code on the JavaFX Application Thread
         Platform.runLater(() -> {
-            // Provide a valid image path or use a mock for the image
             gameObject = new TestGameObject("/cross.png", 100, 100);
         });
     }

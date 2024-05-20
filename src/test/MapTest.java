@@ -80,7 +80,6 @@ public class MapTest extends ApplicationTest {
     public void testUpdateLocations() {
         map.setPlayer(player);
         map.updateLocations();
-        // Test the player's location update logic
         assertEquals(player.getX(), player.getX());
         assertEquals(player.getY(), player.getY());
 
@@ -88,7 +87,6 @@ public class MapTest extends ApplicationTest {
         thieves.add(thief);
         map.setThieves(thieves);
         map.updateLocations();
-        // Test the thief's location update logic
         assertEquals(thief.getX(), thief.getX());
         assertEquals(thief.getY(), thief.getY());
 
@@ -96,7 +94,6 @@ public class MapTest extends ApplicationTest {
         mushrooms.add(mushroom);
         map.setMushrooms(mushrooms);
         map.updateLocations();
-        // Test the mushroom's location update logic
         assertEquals(mushroom.getX(), mushroom.getX());
         assertEquals(mushroom.getY(), mushroom.getY());
     }
