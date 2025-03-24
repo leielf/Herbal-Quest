@@ -1,50 +1,61 @@
 # Herbal-Quest
-Objective:
+# Herbal Quest - Game Engine
+
+**Objective:**  
 The goal of the game is to find all the ingredients (herbs) to prepare a potion that will heal the hero's family. Along the journey, the hero will need to collect money since some ingredients can only be bought. At the end of each level, the hero will encounter either an herb or a person selling herbs. The hero will have the option to choose the items they need.
-Game Elements:
 
-    Main Hero: The central character controlled by the player.
+## Game Elements:
 
-    Blocks: Obstacles that the hero must avoid or interact with during the game.
+- **Main Hero:** The central character controlled by the player.
+- **Blocks:** Obstacles that the hero must avoid or interact with during the game.
+- **Poisonous Mushrooms:**  
+  If the hero touches a poisonous mushroom, the level must be restarted.
+- **Thieves:**  
+  Thieves move back and forth within a set area. If the hero encounters a thief and cannot escape, they will lose all the money they have collected.
+- **Coins:**  
+  If the hero fails to collect all the herbs, they can buy the missing ones with the coins they have gathered.
+- **Market Stand:**  
+  At the end of each level, the hero can buy any missing herbs from a market stand.
 
-    Poisonous Mushrooms:
-    If the hero touches a poisonous mushroom, the level must be restarted.
+## Herbs:
 
-    Thieves:
-    Thieves move back and forth within a set area. If the hero encounters a thief and cannot escape, they will lose all the money they have collected.
+- **Mint**
+- **Ginger**
+- **Lavender**
+- **Marigold**
 
-    Coins:
-    If the hero fails to collect all the herbs, they can buy the missing ones with the coins they have gathered.
+## Controls:
 
-    Market Stand:
-    At the end of each level, the hero can buy any missing herbs from a market stand.
+- **Key UP:** Jump
+- **Key RIGHT:** Move right
+- **Key LEFT:** Move left
 
-Herbs:
+## Game Features:
 
-    Mint
+- Collect herbs to prepare the healing potion.
+- Avoid poisonous mushrooms to prevent losing progress.
+- Escape from thieves to protect your collected money.
+- Use coins to buy herbs you missed.
+- Visit the market stand at the end of each level to complete your herb collection.
 
-    Ginger
+## Installation:
 
-    Lavender
+1. Clone the repository to your local machine:
+    ```bash
+    git clone https://github.com/your-username/herbal-quest.git
+    ```
 
-    Marigold
+2. Follow the setup instructions for your specific platform.  
+   *(Add any setup instructions like installing dependencies, building the game, etc.)*
 
-Controls:
+## Contributing:
 
-    Key UP: Jump
+Feel free to fork the repository and submit pull requests for any improvements, fixes, or new features.
 
-    Key RIGHT: Move right
+## License:
 
-    Key LEFT: Move left
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Game Features:
+---
 
-    Collect herbs to prepare the healing potion.
-
-    Avoid poisonous mushrooms to prevent losing progress.
-
-    Escape from thieves to protect your collected money.
-
-    Use coins to buy herbs you missed.
-
-    Visit the market stand at the end of each level to complete your herb collection.
+Enjoy playing **Herbal Quest** and help the hero heal their family with your herbal knowledge!
