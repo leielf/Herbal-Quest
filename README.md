@@ -1,5 +1,4 @@
 # Herbal-Quest
-# Herbal Quest - Game Engine
 
 **Objective:**  
 The goal of the game is to find all the ingredients (herbs) to prepare a potion that will heal the hero's family. Along the journey, the hero will need to collect money since some ingredients can only be bought. At the end of each level, the hero will encounter either an herb or a person selling herbs. The hero will have the option to choose the items they need.
